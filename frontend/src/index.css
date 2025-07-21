@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  /* Hide Navbar and Footer when printing */
+  nav, footer {
+    display: none !important;
+  }
+
+  /* Ensure the main content takes up the full page */
+  #root {
+    min-height: auto !important;
+  }
+}
