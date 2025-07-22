@@ -1,4 +1,5 @@
 # robots.txt for Karan Homeo Pharmacy
+# Website: Karan Homeo Pharmacy
 
 User-agent: *
 Disallow: /admin/
