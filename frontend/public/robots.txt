@@ -5,4 +5,4 @@ Disallow: /admin/
 Allow: /
 
 # Update the following line with your actual sitemap URL if available
-Sitemap: https://yourdomain.com/sitemap.xml 
+Sitemap: https://karan-homeo-pharmacy.vercel.app/sitemap.xml 
