@@ -27,6 +27,7 @@ const Products = () => {
         image: '',
         description: '',
         manufacturer: '',
+        usage: '',
     });
     const [addLoading, setAddLoading] = useState(false);
     const fileInputRef = useRef();
@@ -57,6 +58,7 @@ const Products = () => {
             image: product.image,
             description: product.description || '',
             manufacturer: product.manufacturer || '',
+            usage: product.usage || '',
         });
         setShowEditModal(true);
     };
@@ -120,7 +122,7 @@ const Products = () => {
             });
             toast.success('Product added!');
             setShowAddModal(false);
-            setAddForm({ name: '', price: '', image: '', description: '', manufacturer: '' });
+            setAddForm({ name: '', price: '', image: '', description: '', manufacturer: '', usage: '' });
             fetchProducts();
         } catch (err) {
             toast.error('Failed to add product');
@@ -149,14 +151,15 @@ const Products = () => {
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manufacturer</th>
+                            <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usage</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {loading ? (
-                            <tr><td colSpan={6} className="text-center py-6">Loading...</td></tr>
+                            <tr><td colSpan={7} className="text-center py-6">Loading...</td></tr>
                         ) : products.length === 0 ? (
-                            <tr><td colSpan={6} className="text-center py-6 text-gray-400">No products found.</td></tr>
+                            <tr><td colSpan={7} className="text-center py-6 text-gray-400">No products found.</td></tr>
                         ) : (
                             products.map(product => (
                                 <tr key={product._id} className="hover:bg-gray-50">
@@ -165,6 +168,7 @@ const Products = () => {
                                     <td className="px-2 sm:px-6 py-2 sm:py-4">₹{product.price}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4">{product.description}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4">{product.manufacturer || '-'}</td>
+                                    <td className="px-2 sm:px-6 py-2 sm:py-4">{product.usage || '-'}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4 text-center flex gap-2 justify-center">
                                         <button onClick={() => handleEditClick(product)} className="p-2 rounded bg-blue-100 hover:bg-blue-200 text-blue-700"><FiEdit /></button>
                                         <button onClick={() => handleDelete(product._id)} className="p-2 rounded bg-red-100 hover:bg-red-200 text-red-700"><FiTrash2 /></button>
@@ -203,6 +207,7 @@ const Products = () => {
                             </div>
                             <textarea name="description" value={addForm.description} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Description" rows={2} />
                             <input name="manufacturer" value={addForm.manufacturer} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Manufacturer" />
+                            <textarea name="usage" value={addForm.usage} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="How to take this medicine" rows={2} />
                         </div>
                         <button type="submit" disabled={addLoading} className="mt-4 sm:mt-6 w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-blue-300 text-xs sm:text-base"><FiSave /> {addLoading ? 'Adding...' : 'Add Product'}</button>
                     </form>
@@ -221,6 +226,7 @@ const Products = () => {
                             <input name="image" value={editForm.image} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Image URL" />
                             <textarea name="description" value={editForm.description} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Description" rows={2} />
                             <input name="manufacturer" value={editForm.manufacturer} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Manufacturer" />
+                            <textarea name="usage" value={editForm.usage} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="How to take this medicine" rows={2} />
                         </div>
                         <button onClick={handleEditSave} className="mt-4 sm:mt-6 w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition text-xs sm:text-base"><FiSave /> Save Changes</button>
                     </div>

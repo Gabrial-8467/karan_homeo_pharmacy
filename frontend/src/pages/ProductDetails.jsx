@@ -107,6 +107,13 @@ const ProductDetails = () => {
                       <p className="text-sm text-gray-400 mb-2">by {product.manufacturer}</p>
                     )}
 
+                    {product.usage && (
+                      <div className="mb-4">
+                        <h3 className="font-semibold text-blue-700 mb-1">How to take</h3>
+                        <p className="text-gray-700 text-base">{product.usage}</p>
+                      </div>
+                    )}
+
                     <div className="flex items-center gap-4 mb-4">
                     </div>
 
