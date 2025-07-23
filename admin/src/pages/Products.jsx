@@ -170,7 +170,7 @@ const Products = () => {
                                     <td className="px-2 sm:px-6 py-2 sm:py-4">₹{product.price}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4">{typeof product.category === 'object' ? product.category.name : product.category}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4">{product.description}</td>
-                                    <td className="px-2 sm:px-6 py-2 sm:py-4">{product.manufacturer}</td>
+                                    <td className="px-2 sm:px-6 py-2 sm:py-4">{product.manufacturer || '-'}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4 text-center flex gap-2 justify-center">
                                         <button onClick={() => handleEditClick(product)} className="p-2 rounded bg-blue-100 hover:bg-blue-200 text-blue-700"><FiEdit /></button>
                                         <button onClick={() => handleDelete(product._id)} className="p-2 rounded bg-red-100 hover:bg-red-200 text-red-700"><FiTrash2 /></button>
