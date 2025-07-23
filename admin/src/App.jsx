@@ -13,8 +13,8 @@ function App() {
           element={<MainLayout />}
         >
           <Route index element={<Dashboard />} />
-          <Route path="products" element={<Products />} />
-          <Route path="orders" element={<Orders />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/orders" element={<Orders />} />
         </Route>
       </Routes>
     </Router>
