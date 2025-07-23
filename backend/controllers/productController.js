@@ -128,15 +128,11 @@ exports.adminGetAllProducts = async (req, res) => {
 // Public Controllers
 exports.getProducts = async (req, res) => {
     try {
-        const { category, search, minPrice, maxPrice, minRating, sort } = req.query;
+        const { search, minPrice, maxPrice, minRating, sort } = req.query;
         
         // Build query
         const query = {};
         
-        if (category && category !== 'All') {
-            query.category = category;
-        }
-
         if (search) {
             query.name = { $regex: search, $options: 'i' };
         }
