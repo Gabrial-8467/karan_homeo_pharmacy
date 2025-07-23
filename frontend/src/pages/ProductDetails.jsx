@@ -61,6 +61,39 @@ const ProductDetails = () => {
         }
     };
 
+    // Utility to render description with bullets and paragraphs
+    function renderDescription(description) {
+      if (!description) return null;
+      const lines = description.split('\n');
+      const elements = [];
+      let currentList = [];
+
+      lines.forEach((line, idx) => {
+        const trimmed = line.trim();
+        if (/^[-*•]\s+/.test(trimmed)) {
+          currentList.push(trimmed.replace(/^[-*•]\s+/, ''));
+        } else if (trimmed) {
+          if (currentList.length) {
+            elements.push(
+              <ul key={`ul-${idx}`} className="list-disc list-inside mb-2">
+                {currentList.map((item, j) => <li key={`li-${idx}-${j}`}>{item}</li>)}
+              </ul>
+            );
+            currentList = [];
+          }
+          elements.push(<p key={`p-${idx}`} className="mb-2">{trimmed}</p>);
+        }
+      });
+      if (currentList.length) {
+        elements.push(
+          <ul key={`ul-last`} className="list-disc list-inside mb-2">
+            {currentList.map((item, j) => <li key={`li-last-${j}`}>{item}</li>)}
+          </ul>
+        );
+      }
+      return <div>{elements}</div>;
+    }
+
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-[60vh]">
@@ -117,7 +150,7 @@ const ProductDetails = () => {
                     <div className="flex items-center gap-4 mb-4">
                     </div>
 
-                    <p className="text-gray-700 text-base mb-4">{product.description}</p>
+                    {renderDescription(product.description)}
                     
                     <p className="text-3xl sm:text-4xl font-bold text-blue-700 mb-6">₹{product.price}</p>
                     
