@@ -90,6 +90,87 @@ const Checkout = () => {
         }
     };
 
+    const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_PLACEHOLDER";
+
+    const handleRazorpayPayment = async () => {
+        if (!user) {
+            toast.error('You must be logged in to pay.');
+            navigate('/login');
+            return;
+        }
+        const formErrors = validateForm();
+        if (Object.keys(formErrors).length > 0) {
+            setErrors(formErrors);
+            return;
+        }
+        setErrors({});
+        setIsLoading(true);
+        try {
+            // Create Razorpay order on backend
+            const { data: order } = await api.post('/payment/create-order', {
+                amount: total,
+                receipt: `order_rcptid_${Date.now()}`
+            });
+            const options = {
+                key: RAZORPAY_KEY_ID,
+                amount: order.amount,
+                currency: order.currency,
+                name: "Karan Homeo Pharmacy",
+                description: "Order Payment",
+                order_id: order.id,
+                handler: async function (response) {
+                    toast.success('Payment successful! Payment ID: ' + response.razorpay_payment_id);
+                    // Place order with payment method as 'Razorpay'
+                    await handleSubmitRazorpay(response);
+                },
+                prefill: {
+                    name: formData.fullName,
+                    email: user?.email || '',
+                    contact: formData.phone
+                },
+                theme: { color: "#3399cc" }
+            };
+            const rzp = new window.Razorpay(options);
+            rzp.open();
+        } catch (error) {
+            toast.error('Failed to initiate payment.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSubmitRazorpay = async (razorpayResponse) => {
+        // Place order with payment method as Razorpay
+        const orderData = {
+            orderItems: cart.map(item => ({
+                product: item._id,
+                name: item.name,
+                image: item.image,
+                price: item.price,
+                quantity: item.quantity
+            })),
+            shippingAddress: {
+                fullName: formData.fullName,
+                address: formData.address,
+                city: formData.city,
+                state: formData.state,
+                postalCode: formData.postalCode,
+                phone: formData.phone
+            },
+            paymentMethod: 'Razorpay',
+            paymentResult: razorpayResponse
+        };
+        try {
+            const response = await api.post('/orders', orderData);
+            clearCart();
+            toast.success('Order placed successfully!');
+            await fetchProducts();
+            navigate('/order-confirmation', { state: { order: response.data.data } });
+        } catch (error) {
+            toast.error('Order placement failed after payment.');
+        }
+    };
+
     return (
         <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-12">
             <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8">Checkout</h1>
@@ -126,12 +207,21 @@ const Checkout = () => {
                                 <input type="radio" name="paymentMethod" value="COD" checked={formData.paymentMethod === 'COD'} onChange={handleChange} className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
                                 <span className="ml-3 text-gray-700 text-sm sm:text-base">Cash on Delivery (COD)</span>
                             </label>
-                            {/* Add other payment methods here */}
+                            <label className="flex items-center p-3 sm:p-4 border border-gray-300 rounded-md cursor-pointer">
+                                <input type="radio" name="paymentMethod" value="Razorpay" checked={formData.paymentMethod === 'Razorpay'} onChange={handleChange} className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
+                                <span className="ml-3 text-gray-700 text-sm sm:text-base">Online Payment (Razorpay)</span>
+                            </label>
                         </div>
 
-                        <button type="submit" disabled={isLoading || cart.length === 0} className="w-full mt-6 sm:mt-8 bg-blue-600 text-white py-2.5 sm:py-3 rounded-md font-semibold text-base sm:text-lg hover:bg-blue-700 disabled:bg-blue-300">
-                            {isLoading ? 'Placing Order...' : 'Place Order'}
-                        </button>
+                        {formData.paymentMethod === 'Razorpay' ? (
+                            <button type="button" disabled={isLoading || cart.length === 0} onClick={handleRazorpayPayment} className="w-full mt-6 sm:mt-8 bg-green-600 text-white py-2.5 sm:py-3 rounded-md font-semibold text-base sm:text-lg hover:bg-green-700 disabled:bg-green-300">
+                                {isLoading ? 'Processing Payment...' : 'Pay with Razorpay'}
+                            </button>
+                        ) : ( 
+                            <button type="submit" disabled={isLoading || cart.length === 0} className="w-full mt-6 sm:mt-8 bg-blue-600 text-white py-2.5 sm:py-3 rounded-md font-semibold text-base sm:text-lg hover:bg-blue-700 disabled:bg-blue-300">
+                                {isLoading ? 'Placing Order...' : 'Place Order'}
+                            </button>
+                        )}
                     </form>
                 </div>
 
