@@ -162,7 +162,7 @@ const Navbar = () => {
                                         aria-controls="mobile-account-dropdown"
                                     >
                                         <span className="flex items-center gap-2">
-                                            <FiUser /> My Account
+                                            <FiUser /> {user?.name ? user.name : 'My Account'}
                                         </span>
                                         <FiChevronDown className={`transition-transform ${mobileAccountOpen ? 'rotate-180' : ''}`} />
                                     </button>
