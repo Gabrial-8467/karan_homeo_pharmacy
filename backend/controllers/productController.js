@@ -181,8 +181,7 @@ exports.getProducts = async (req, res) => {
 
 exports.getProduct = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id)
-            .populate('reviews.user', 'name');
+        const product = await Product.findById(req.params.id);
 
         if (!product) {
             return res.status(404).json({
