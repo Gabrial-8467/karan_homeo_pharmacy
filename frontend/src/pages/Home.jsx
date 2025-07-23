@@ -6,8 +6,8 @@ import { useStore } from '../context/storeContext';
 const Home = () => {
     const { products, categories } = useStore();
 
-    // Display the first 3 categories found in the products to make the page dynamic
-    const displayedCategories = categories.slice(0, 3);
+    // Display all categories found in the products
+    const displayedCategories = categories;
 
     return (
         <div className="min-h-screen w-full bg-gradient-to-br from-blue-100 via-blue-50 to-blue-200 flex flex-col items-center">
