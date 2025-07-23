@@ -15,6 +15,7 @@ import { StoreProvider } from './context/storeContext';
 import Footer from './components/Footer';
 import { Toaster } from 'react-hot-toast';
 import'./index.css';
+import { Analytics } from '@vercel/analytics/react';
 
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
@@ -49,6 +50,7 @@ function App() {
             } />
           </Routes>
           <Footer />
+          <Analytics />
         </Router>
       </StoreProvider>
     </AuthProvider>
