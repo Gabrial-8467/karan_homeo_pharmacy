@@ -61,33 +61,86 @@ const ProductDetails = () => {
         }
     };
 
-    // Utility to render description with bullets and paragraphs
+    // Utility to render description with headings, bullets, paragraphs, and bold text
     function renderDescription(description) {
       if (!description) return null;
       const lines = description.split('\n');
       const elements = [];
       let currentList = [];
 
+      // Helper to render bold text
+      const renderBold = (text, keyPrefix = '') => {
+        // Replace **bold** or __bold__ with <strong>bold</strong>
+        const regex = /\*\*(.*?)\*\*|__(.*?)__/g;
+        const parts = [];
+        let lastIndex = 0;
+        let match;
+        let idx = 0;
+        while ((match = regex.exec(text)) !== null) {
+          if (match.index > lastIndex) {
+            parts.push(text.slice(lastIndex, match.index));
+          }
+          parts.push(<strong key={`${keyPrefix}-b-${idx}`}>{match[1] || match[2]}</strong>);
+          lastIndex = regex.lastIndex;
+          idx++;
+        }
+        if (lastIndex < text.length) {
+          parts.push(text.slice(lastIndex));
+        }
+        return parts.length > 0 ? parts : text;
+      };
+
       lines.forEach((line, idx) => {
         const trimmed = line.trim();
-        if (/^[-*•]\s+/.test(trimmed)) {
+        // Headings
+        if (/^###\s+/.test(trimmed)) {
+          if (currentList.length) {
+            elements.push(
+              <ul key={`ul-${idx}`} className="list-disc list-inside mb-2">
+                {currentList.map((item, j) => <li key={`li-${idx}-${j}`}>{renderBold(item, `li-${idx}-${j}`)}</li>)}
+              </ul>
+            );
+            currentList = [];
+          }
+          elements.push(<h3 key={`h3-${idx}`} className="text-lg font-bold mb-2">{renderBold(trimmed.replace(/^###\s+/, ''), `h3-${idx}`)}</h3>);
+        } else if (/^##\s+/.test(trimmed)) {
+          if (currentList.length) {
+            elements.push(
+              <ul key={`ul-${idx}`} className="list-disc list-inside mb-2">
+                {currentList.map((item, j) => <li key={`li-${idx}-${j}`}>{renderBold(item, `li-${idx}-${j}`)}</li>)}
+              </ul>
+            );
+            currentList = [];
+          }
+          elements.push(<h2 key={`h2-${idx}`} className="text-xl font-bold mb-2">{renderBold(trimmed.replace(/^##\s+/, ''), `h2-${idx}`)}</h2>);
+        } else if (/^#\s+/.test(trimmed)) {
+          if (currentList.length) {
+            elements.push(
+              <ul key={`ul-${idx}`} className="list-disc list-inside mb-2">
+                {currentList.map((item, j) => <li key={`li-${idx}-${j}`}>{renderBold(item, `li-${idx}-${j}`)}</li>)}
+              </ul>
+            );
+            currentList = [];
+          }
+          elements.push(<h1 key={`h1-${idx}`} className="text-2xl font-bold mb-2">{renderBold(trimmed.replace(/^#\s+/, ''), `h1-${idx}`)}</h1>);
+        } else if (/^[-*•]\s+/.test(trimmed)) {
           currentList.push(trimmed.replace(/^[-*•]\s+/, ''));
         } else if (trimmed) {
           if (currentList.length) {
             elements.push(
               <ul key={`ul-${idx}`} className="list-disc list-inside mb-2">
-                {currentList.map((item, j) => <li key={`li-${idx}-${j}`}>{item}</li>)}
+                {currentList.map((item, j) => <li key={`li-${idx}-${j}`}>{renderBold(item, `li-${idx}-${j}`)}</li>)}
               </ul>
             );
             currentList = [];
           }
-          elements.push(<p key={`p-${idx}`} className="mb-2">{trimmed}</p>);
+          elements.push(<p key={`p-${idx}`} className="mb-2">{renderBold(trimmed, `p-${idx}`)}</p>);
         }
       });
       if (currentList.length) {
         elements.push(
           <ul key={`ul-last`} className="list-disc list-inside mb-2">
-            {currentList.map((item, j) => <li key={`li-last-${j}`}>{item}</li>)}
+            {currentList.map((item, j) => <li key={`li-last-${j}`}>{renderBold(item, `li-last-${j}`)}</li>)}
           </ul>
         );
       }
