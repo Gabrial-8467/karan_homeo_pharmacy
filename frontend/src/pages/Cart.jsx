@@ -65,16 +65,9 @@ const Cart = () => {
                                                 <FiMinus size={16} />
                                             </button>
                                             <span className="px-3 sm:px-4 font-semibold">{item.quantity}</span>
-                                            <button onClick={() => {
-                                                if (item.quantity < item.stock) {
-                                                    updateCartQuantity(item._id, item.quantity + 1);
-                                                } else {
-                                                    toast.error('Cannot add more than available stock!');
-                                                }
-                                            }} className="p-2 hover:bg-gray-100 transition" disabled={item.quantity >= item.stock}>
+                                            <button onClick={() => updateCartQuantity(item._id, item.quantity + 1)} className="p-2 hover:bg-gray-100 transition">
                                                 <FiPlus size={16} />
                                             </button>
-                                            <span className="ml-2 text-xs text-gray-500">/ {item.stock} in stock</span>
                                         </div>
                                         <p className="font-bold text-base sm:text-lg w-20 sm:w-24 text-right">₹{(item.price * item.quantity).toFixed(2)}</p>
                                         <button onClick={() => removeFromCart(item._id)} className="text-gray-400 hover:text-red-500 transition">

@@ -34,7 +34,6 @@ const Dashboard = () => {
     const totalProducts = products.length;
     const totalOrders = orders.length;
     const totalRevenue = orders.reduce((sum, o) => sum + (o.orderStatus === 'Delivered' ? o.totalPrice : 0), 0);
-    const lowStockProducts = products.filter(p => p.stock <= 10);
     const recentOrders = orders.slice(0, 5);
 
     return (

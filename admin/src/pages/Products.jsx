@@ -171,15 +171,16 @@ const Products = () => {
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                            <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                            <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                            <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manufacturer</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {loading ? (
-                            <tr><td colSpan={6} className="text-center py-6">Loading...</td></tr>
+                            <tr><td colSpan={7} className="text-center py-6">Loading...</td></tr>
                         ) : products.length === 0 ? (
-                            <tr><td colSpan={6} className="text-center py-6 text-gray-400">No products found.</td></tr>
+                            <tr><td colSpan={7} className="text-center py-6 text-gray-400">No products found.</td></tr>
                         ) : (
                             products.map(product => (
                                 <tr key={product._id} className="hover:bg-gray-50">
@@ -187,7 +188,8 @@ const Products = () => {
                                     <td className="px-2 sm:px-6 py-2 sm:py-4 font-semibold text-gray-800">{product.name}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4">₹{product.price}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4">{typeof product.category === 'object' ? product.category.name : product.category}</td>
-                                    <td className="px-2 sm:px-6 py-2 sm:py-4">{product.stock}</td>
+                                    <td className="px-2 sm:px-6 py-2 sm:py-4">{product.description}</td>
+                                    <td className="px-2 sm:px-6 py-2 sm:py-4">{product.manufacturer}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4 text-center flex gap-2 justify-center">
                                         <button onClick={() => handleEditClick(product)} className="p-2 rounded bg-blue-100 hover:bg-blue-200 text-blue-700"><FiEdit /></button>
                                         <button onClick={() => handleDelete(product._id)} className="p-2 rounded bg-red-100 hover:bg-red-200 text-red-700"><FiTrash2 /></button>
