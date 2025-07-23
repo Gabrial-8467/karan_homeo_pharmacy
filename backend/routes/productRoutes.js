@@ -6,8 +6,7 @@ const {
     adminDeleteProduct,
     adminGetAllProducts,
     getProducts,
-    getProduct,
-    createProductReview
+    getProduct
 } = require('../controllers/productController');
 
 // Public routes
@@ -24,6 +23,5 @@ router.put('/:id', adminUpdateProduct);
 router.delete('/:id', adminDeleteProduct);
 
 // Protected routes (logged-in users)
-router.post('/:id/reviews', createProductReview);
 
 module.exports = router; 
