@@ -48,7 +48,13 @@ app.use((req, res, next) => {
 connectDB();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://karan-homeo-pharmacy.vercel.app',
+    'http://localhost:3000'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // Serve uploaded files
