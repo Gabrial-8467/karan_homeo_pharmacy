@@ -74,7 +74,13 @@ const ProductCard = ({ product }) => {
           <p className="text-xs text-gray-400 mb-1">by {product.manufacturer}</p>
         )}
         <p className="text-sm text-gray-600 mt-1 line-clamp-2 h-[40px]" title={product.description}>
-          {product.description}
+          {product.description
+            ? product.description
+                .split('\n')
+                .map(line => line.replace(/^\s*(#{1,6}|[-*•])\s*/, ''))
+                .filter(Boolean)
+                .join(' ')
+            : ''}
         </p>
         <div className="flex justify-between items-center mt-auto pt-2">
           <p className="text-xl font-extrabold text-blue-700">₹{product.price}</p>
