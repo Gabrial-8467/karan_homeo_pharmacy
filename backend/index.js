@@ -2,10 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const dotenv = require('dotenv');
-// const http = require('http');
-// const { Server } = require('socket.io');
 
-// Load environment variables
 dotenv.config();
 
 // Import database connection
@@ -31,6 +28,7 @@ connectDB();
 app.use(cors({
   origin: [
     'https://karan-homeo-pharmacy.vercel.app',
+    'https://karan-homeo-pharmacy-18po.vercel.app',
     'http://localhost:3000'
   ],
   credentials: true
