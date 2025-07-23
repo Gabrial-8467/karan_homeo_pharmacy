@@ -34,7 +34,7 @@ const Dashboard = () => {
     const totalProducts = products.length;
     const totalOrders = orders.length;
     const totalRevenue = orders.reduce((sum, o) => sum + (o.orderStatus === 'Delivered' ? o.totalPrice : 0), 0);
-    const recentOrders = orders.slice(0, 5);
+    const recentOrders = orders.slice(0, 10);
 
     return (
         <div className="p-2 sm:p-4">
@@ -63,11 +63,11 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
+            <div className="grid grid-cols-1 gap-4 sm:gap-8">
                 {/* Recent Orders */}
-                <div className="bg-white rounded-xl shadow-lg p-3 sm:p-6 overflow-x-auto">
+                <div className="bg-white rounded-xl shadow-lg p-3 sm:p-6">
                     <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-4">Recent Orders</h2>
-                    <table className="w-full text-xs sm:text-sm min-w-[400px]">
+                    <table className="w-full text-xs sm:text-sm">
                         <thead>
                             <tr className="bg-gray-50">
                                 <th className="p-2 text-left">Order ID</th>
