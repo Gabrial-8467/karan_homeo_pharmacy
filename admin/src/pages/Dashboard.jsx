@@ -94,33 +94,6 @@ const Dashboard = () => {
                         </tbody>
                     </table>
                 </div>
-
-                {/* Low Stock Products */}
-                <div className="bg-white rounded-xl shadow-lg p-3 sm:p-6 overflow-x-auto">
-                    <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-4 flex items-center gap-2"><FiAlertTriangle className="text-yellow-500" /> Low Stock Products</h2>
-                    <table className="w-full text-xs sm:text-sm min-w-[300px]">
-                        <thead>
-                            <tr className="bg-gray-50">
-                                <th className="p-2 text-left">Product</th>
-                                <th className="p-2 text-left">Stock</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {loading ? (
-                                <tr><td colSpan={2} className="text-center py-4 sm:py-6">Loading...</td></tr>
-                            ) : lowStockProducts.length === 0 ? (
-                                <tr><td colSpan={2} className="text-center py-4 sm:py-6 text-gray-400">No low stock products.</td></tr>
-                            ) : (
-                                lowStockProducts.map(product => (
-                                    <tr key={product._id} className="hover:bg-gray-50">
-                                        <td className="p-2">{product.name}</td>
-                                        <td className="p-2 font-semibold text-red-600">{product.stock}</td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
             </div>
         </div>
     );

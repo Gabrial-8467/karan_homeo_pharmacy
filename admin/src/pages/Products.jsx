@@ -13,7 +13,7 @@ const getImageUrl = (imagePath) => {
     return `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${imagePath}`;
 };
 
-const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000');
+// Remove socket.io and stock update logic
 
 const Products = () => {
     const [products, setProducts] = useState([]);
@@ -32,25 +32,6 @@ const Products = () => {
     });
     const [addLoading, setAddLoading] = useState(false);
     const fileInputRef = useRef();
-
-    useEffect(() => {
-        socket.on('connect', () => {
-            console.log('Connected to WebSocket server');
-        });
-
-        socket.on('stock_updated', ({ productId, newStock }) => {
-            setProducts(prevProducts =>
-                prevProducts.map(p =>
-                    p._id === productId ? { ...p, stock: newStock } : p
-                )
-            );
-            toast.success('Stock updated in real-time!', { icon: '🔄' });
-        });
-
-        return () => {
-            socket.disconnect();
-        };
-    }, []);
 
     // Fetch products
     useEffect(() => {
@@ -76,7 +57,7 @@ const Products = () => {
             name: product.name,
             price: product.price,
             category: product.category,
-            stock: product.stock,
+            // stock: product.stock, // Remove stock
             image: product.image,
             description: product.description || '',
             manufacturer: product.manufacturer || '',
@@ -245,7 +226,7 @@ const Products = () => {
                             <input name="name" value={editForm.name} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Name" />
                             <input name="price" value={editForm.price} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Price" type="number" />
                             <input name="category" value={editForm.category} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Category" />
-                            <input name="stock" value={editForm.stock} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Stock" type="number" />
+                            {/* Remove stock input */}
                             <input name="image" value={editForm.image} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Image URL" />
                             <textarea name="description" value={editForm.description} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Description" rows={2} />
                             <input name="manufacturer" value={editForm.manufacturer} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Manufacturer" />
