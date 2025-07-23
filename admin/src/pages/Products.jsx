@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react';
 import { FiEdit, FiTrash2, FiPlus, FiSave, FiX, FiUpload } from 'react-icons/fi';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { io } from 'socket.io-client';
 
 const api = axios.create({ baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api` });
 
@@ -25,7 +24,6 @@ const Products = () => {
     const [addForm, setAddForm] = useState({
         name: '',
         price: '',
-        category: '',
         image: '',
         description: '',
         manufacturer: '',
@@ -56,8 +54,6 @@ const Products = () => {
         setEditForm({
             name: product.name,
             price: product.price,
-            category: product.category,
-            // stock: product.stock, // Remove stock
             image: product.image,
             description: product.description || '',
             manufacturer: product.manufacturer || '',
@@ -124,7 +120,7 @@ const Products = () => {
             });
             toast.success('Product added!');
             setShowAddModal(false);
-            setAddForm({ name: '', price: '', category: '', image: '', description: '', manufacturer: '' });
+            setAddForm({ name: '', price: '', image: '', description: '', manufacturer: '' });
             fetchProducts();
         } catch (err) {
             toast.error('Failed to add product');
@@ -151,7 +147,6 @@ const Products = () => {
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                            <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manufacturer</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -159,16 +154,15 @@ const Products = () => {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {loading ? (
-                            <tr><td colSpan={7} className="text-center py-6">Loading...</td></tr>
+                            <tr><td colSpan={6} className="text-center py-6">Loading...</td></tr>
                         ) : products.length === 0 ? (
-                            <tr><td colSpan={7} className="text-center py-6 text-gray-400">No products found.</td></tr>
+                            <tr><td colSpan={6} className="text-center py-6 text-gray-400">No products found.</td></tr>
                         ) : (
                             products.map(product => (
                                 <tr key={product._id} className="hover:bg-gray-50">
                                     <td className="px-2 sm:px-6 py-2 sm:py-4"><img src={getImageUrl(product.image)} alt={product.name} className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded bg-gray-100" /></td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4 font-semibold text-gray-800">{product.name}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4">₹{product.price}</td>
-                                    <td className="px-2 sm:px-6 py-2 sm:py-4">{typeof product.category === 'object' ? product.category.name : product.category}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4">{product.description}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4">{product.manufacturer || '-'}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4 text-center flex gap-2 justify-center">
@@ -191,7 +185,6 @@ const Products = () => {
                         <div className="space-y-3 sm:space-y-4">
                             <input name="name" value={addForm.name} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Medicine Name" required />
                             <input name="price" value={addForm.price} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Price" type="number" required />
-                            <input name="category" value={addForm.category} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Category" required />
                             <div className="flex items-center gap-2 sm:gap-4">
                                 <label className="flex items-center gap-2 cursor-pointer bg-blue-50 px-2 sm:px-3 py-2 rounded border border-blue-200 hover:bg-blue-100 text-xs sm:text-base">
                                     <FiUpload />
@@ -225,8 +218,6 @@ const Products = () => {
                         <div className="space-y-3 sm:space-y-4">
                             <input name="name" value={editForm.name} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Name" />
                             <input name="price" value={editForm.price} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Price" type="number" />
-                            <input name="category" value={editForm.category} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Category" />
-                            {/* Remove stock input */}
                             <input name="image" value={editForm.image} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Image URL" />
                             <textarea name="description" value={editForm.description} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Description" rows={2} />
                             <input name="manufacturer" value={editForm.manufacturer} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Manufacturer" />
