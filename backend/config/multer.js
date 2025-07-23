@@ -6,7 +6,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'karan-homeo-pharmacy', // Change as needed
-    allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'bmp'],
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'bmp','avif'],
   },
 });
 
