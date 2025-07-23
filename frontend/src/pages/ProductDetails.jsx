@@ -103,13 +103,11 @@ const ProductDetails = () => {
                 {/* Right Column: Product Info */}
                 <div className="flex flex-col">
                     <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">{product.name}</h1>
+                    {product.manufacturer && (
+                      <p className="text-sm text-gray-400 mb-2">by {product.manufacturer}</p>
+                    )}
 
                     <div className="flex items-center gap-4 mb-4">
-                        {product.stock > 0 ? (
-                            <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">In Stock</span>
-                        ) : (
-                            <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">Out of Stock</span>
-                        )}
                     </div>
 
                     <p className="text-gray-700 text-base mb-4">{product.description}</p>
@@ -150,23 +148,18 @@ const ProductDetails = () => {
                             <button
                                 onClick={() => setQuantity(q => q + 1)}
                                 className="p-3 text-gray-700 hover:bg-gray-100 rounded-r-lg"
-                                disabled={quantity >= product.stock}
                             >
                                 <FiPlus />
                             </button>
                         </div>
                         <button
                             onClick={handleAddToCart}
-                            className="flex-grow flex items-center justify-center gap-3 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition shadow-md disabled:bg-blue-300 disabled:cursor-not-allowed"
-                            disabled={product.stock === 0}
+                            className="flex-grow flex items-center justify-center gap-3 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition shadow-md"
                         >
                             <FiShoppingCart size={20} />
                             <span>{isInCart ? 'Update Cart' : 'Add to Cart'}</span>
                         </button>
                     </div>
-                     {product.stock > 0 && product.stock <= 10 && (
-                        <p className="text-red-600 text-sm mt-3 font-semibold">Only {product.stock} left in stock - order soon!</p>
-                    )}
                 </div>
             </div>
 

@@ -57,6 +57,9 @@ const ProductCard = ({ product }) => {
           <h3 className="font-bold text-gray-800 text-lg truncate group-hover:text-blue-600 transition" title={product.name}>
             {product.name}
           </h3>
+          {product.manufacturer && (
+            <p className="text-xs text-gray-400 mb-1">by {product.manufacturer}</p>
+          )}
           <p className="text-sm text-gray-600 mt-1 line-clamp-2 h-[40px]" title={product.description}>
             {product.description}
           </p>
@@ -66,14 +69,7 @@ const ProductCard = ({ product }) => {
           {!isAdding && !isInCart && (
             <button
               className="flex items-center gap-2 bg-blue-700 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-800 transition shadow group-hover:scale-105 mt-2"
-              onClick={() => {
-                if (product.stock > 0) {
-                  handleInitialAdd();
-                } else {
-                  toast.error('Out of stock!');
-                }
-              }}
-              disabled={product.stock === 0}
+              onClick={handleInitialAdd}
             >
               <FiShoppingCart /> Add to Cart
             </button>
@@ -90,14 +86,7 @@ const ProductCard = ({ product }) => {
               <span className="font-semibold text-gray-700 w-8 text-center text-lg">{quantity}</span>
               <button
                 className="p-2 rounded-full bg-blue-100 hover:bg-blue-200 transition"
-                onClick={() => {
-                  if (quantity < product.stock) {
-                    updateCartQuantity(product._id, quantity + 1);
-                  } else {
-                    toast.error('Cannot add more than available stock!');
-                  }
-                }}
-                disabled={quantity >= product.stock}
+                onClick={() => updateCartQuantity(product._id, quantity + 1)}
               >
                 <FiPlus />
               </button>
@@ -105,11 +94,6 @@ const ProductCard = ({ product }) => {
           )}
         </div>
       </div>
-      {product.stock > 0 && product.stock <= 10 && (
-          <div className="absolute top-2 right-2 bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-semibold">
-              Only {product.stock} left in stock!
-          </div>
-      )}
       {isAdding && (
           <div className="absolute inset-0 bg-blue-600 bg-opacity-90 flex items-center justify-center rounded-lg">
               <p className="text-white text-lg font-semibold">Added!</p>

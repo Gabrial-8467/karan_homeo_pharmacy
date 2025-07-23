@@ -26,7 +26,6 @@ const Products = () => {
         name: '',
         price: '',
         category: '',
-        stock: '',
         image: '',
         description: '',
         manufacturer: '',
@@ -141,11 +140,10 @@ const Products = () => {
             await api.post('/products', {
                 ...addForm,
                 price: Number(addForm.price),
-                stock: Number(addForm.stock),
             });
             toast.success('Product added!');
             setShowAddModal(false);
-            setAddForm({ name: '', price: '', category: '', stock: '', image: '', description: '', manufacturer: '' });
+            setAddForm({ name: '', price: '', category: '', image: '', description: '', manufacturer: '' });
             fetchProducts();
         } catch (err) {
             toast.error('Failed to add product');
@@ -211,7 +209,6 @@ const Products = () => {
                             <input name="name" value={addForm.name} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Medicine Name" required />
                             <input name="price" value={addForm.price} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Price" type="number" required />
                             <input name="category" value={addForm.category} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Category" required />
-                            <input name="stock" value={addForm.stock} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Stock" type="number" required />
                             <div className="flex items-center gap-2 sm:gap-4">
                                 <label className="flex items-center gap-2 cursor-pointer bg-blue-50 px-2 sm:px-3 py-2 rounded border border-blue-200 hover:bg-blue-100 text-xs sm:text-base">
                                     <FiUpload />
