@@ -42,12 +42,16 @@ export const StoreProvider = ({ children }) => {
             const fetchedProducts = productsRes.data.data;
             setProducts(fetchedProducts);
 
-            // Dynamically generate categories from products
-            const categoryNames = [...new Set(fetchedProducts.map(p => p.category).filter(Boolean))];
-            const generatedCategories = categoryNames.map(name => ({
-                _id: name, // Use name as a unique key
-                name: name
-            }));
+            // Dynamically generate categories from products (using categories array)
+            const categorySet = new Set();
+            fetchedProducts.forEach(p => {
+                if (Array.isArray(p.categories)) {
+                    p.categories.forEach(cat => {
+                        if (cat && cat.trim()) categorySet.add(cat.trim());
+                    });
+                }
+            });
+            const generatedCategories = Array.from(categorySet).map(name => ({ _id: name, name }));
             setCategories(generatedCategories);
         } catch (error) {
             console.error('Failed to fetch products:', error);
