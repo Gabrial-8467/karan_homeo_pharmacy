@@ -28,6 +28,7 @@ const Products = () => {
         description: '',
         manufacturer: '',
         usage: '',
+        categories: '',
     });
     const [addLoading, setAddLoading] = useState(false);
     const fileInputRef = useRef();
@@ -119,10 +120,11 @@ const Products = () => {
             await api.post('/products', {
                 ...addForm,
                 price: Number(addForm.price),
+                categories: addForm.categories.split(',').map(c => c.trim()).filter(Boolean),
             });
             toast.success('Product added!');
             setShowAddModal(false);
-            setAddForm({ name: '', price: '', image: '', description: '', manufacturer: '', usage: '' });
+            setAddForm({ name: '', price: '', image: '', description: '', manufacturer: '', usage: '', categories: '' });
             fetchProducts();
         } catch (err) {
             toast.error('Failed to add product');
@@ -208,6 +210,7 @@ const Products = () => {
                             <textarea name="description" value={addForm.description} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Description" rows={2} />
                             <input name="manufacturer" value={addForm.manufacturer} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Manufacturer" />
                             <textarea name="usage" value={addForm.usage} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="How to take this medicine" rows={2} />
+                            <input name="categories" value={addForm.categories} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Categories (comma separated)" />
                         </div>
                         <button type="submit" disabled={addLoading} className="mt-4 sm:mt-6 w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-blue-300 text-xs sm:text-base"><FiSave /> {addLoading ? 'Adding...' : 'Add Product'}</button>
                     </form>

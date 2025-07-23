@@ -29,6 +29,10 @@ const productSchema = new mongoose.Schema({
         default: '',
         trim: true
     },
+    categories: {
+        type: [String],
+        default: [],
+    },
     createdAt: {
         type: Date,
         default: Date.now
