@@ -2,8 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const dotenv = require('dotenv');
-const http = require('http');
-const { Server } = require('socket.io');
+// const http = require('http');
+// const { Server } = require('socket.io');
 
 // Load environment variables
 dotenv.config();
@@ -22,27 +22,7 @@ const uploadRoutes = require('./routes/uploadRoutes');
 const { errorHandler } = require('./middlewares/error');
 
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {
-    cors: {
-        origin: "*", // Allow all origins for simplicity, can be restricted later
-        methods: ["GET", "POST"]
-    }
-});
 
-// Socket.io connection
-io.on('connection', (socket) => {
-    console.log('a user connected');
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-    });
-});
-
-// Make io accessible to our router
-app.use((req, res, next) => {
-    req.io = io;
-    next();
-});
 
 // Connect to MongoDB
 connectDB();
@@ -89,6 +69,6 @@ app.use((req, res) => {
 
 // Start Server
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 }); 
