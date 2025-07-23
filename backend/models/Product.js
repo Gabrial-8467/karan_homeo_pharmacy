@@ -23,6 +23,11 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Product image is required']
     },
+    manufacturer: {
+        type: String,
+        default: '',
+        trim: true
+    },
     rating: {
         type: Number,
         default: 0,

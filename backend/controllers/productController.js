@@ -3,6 +3,13 @@ const fs = require('fs');
 const path = require('path');
 const cloudinary = require('../config/cloudinary');
 
+// Update all products missing manufacturer on server start
+Product.updateMany({ manufacturer: { $exists: false } }, { $set: { manufacturer: 'Unknown Manufacturer' } }).then(res => {
+  if (res.modifiedCount > 0) {
+    console.log(`Updated ${res.modifiedCount} products with default manufacturer.`);
+  }
+});
+
 // Admin Controllers
 exports.adminCreateProduct = async (req, res) => {
     try {
