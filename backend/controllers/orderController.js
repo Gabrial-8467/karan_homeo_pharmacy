@@ -42,15 +42,6 @@ exports.adminUpdateOrderStatus = async (req, res) => {
             order.deliveredAt = Date.now();
         }
 
-        // If cancelled, restore stock
-        if (req.body.status === 'Cancelled') {
-            for (const item of order.orderItems) {
-                await Product.findByIdAndUpdate(item.product, {
-                    $inc: { stock: item.quantity }
-                });
-            }
-        }
-
         await order.save();
 
         res.json({
@@ -103,11 +94,6 @@ exports.adminDeleteOrder = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Order not found' });
         }
 
-        // Optional: Restore stock before deleting the order
-        for (const item of order.orderItems) {
-            await Product.findByIdAndUpdate(item.product, { $inc: { stock: item.quantity } });
-        }
-
         await order.deleteOne();
 
         res.json({ success: true, message: 'Order deleted successfully' });
@@ -125,28 +111,6 @@ exports.createOrder = async (req, res) => {
             paymentMethod
         } = req.body;
 
-        // Verify stock and calculate prices
-        const updatedProducts = [];
-        for (const item of orderItems) {
-            const product = await Product.findById(item.product);
-            if (!product) {
-                return res.status(404).json({
-                    success: false,
-                    message: `Product not found: ${item.product}`
-                });
-            }
-            if (product.stock < item.quantity) {
-                return res.status(400).json({
-                    success: false,
-                    message: `Insufficient stock for ${product.name}`
-                });
-            }
-            // Update stock
-            product.stock -= item.quantity;
-            await product.save();
-            updatedProducts.push({ productId: product._id, newStock: product.stock });
-        }
-
         const order = new Order({
             user: req.user._id,
             orderItems,
@@ -156,13 +120,6 @@ exports.createOrder = async (req, res) => {
 
         const createdOrder = await order.save();
         
-        // Emit stock update event
-        if (req.io) {
-            updatedProducts.forEach(p => {
-                req.io.emit('stock_updated', { productId: p.productId, newStock: p.newStock });
-            });
-        }
-
         res.status(201).json({
             success: true,
             data: createdOrder

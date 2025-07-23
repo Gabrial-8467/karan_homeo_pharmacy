@@ -5,7 +5,6 @@ const {
     adminUpdateProduct,
     adminDeleteProduct,
     adminGetAllProducts,
-    adminUpdateStock,
     getProducts,
     getProduct,
     createProductReview
@@ -23,7 +22,6 @@ router.post('/', adminCreateProduct);
 router.get('/admin/all', adminGetAllProducts);
 router.put('/:id', adminUpdateProduct);
 router.delete('/:id', adminDeleteProduct);
-router.patch('/:id/stock', adminUpdateStock);
 
 // Protected routes (logged-in users)
 router.post('/:id/reviews', createProductReview);

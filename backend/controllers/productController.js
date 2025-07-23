@@ -118,33 +118,6 @@ exports.adminGetAllProducts = async (req, res) => {
     }
 };
 
-exports.adminUpdateStock = async (req, res) => {
-    try {
-        const { stock } = req.body;
-        const product = await Product.findById(req.params.id);
-
-        if (!product) {
-            return res.status(404).json({
-                success: false,
-                message: 'Product not found'
-            });
-        }
-
-        product.stock = stock;
-        await product.save();
-
-        res.json({
-            success: true,
-            data: product
-        });
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message
-        });
-    }
-};
-
 // Public Controllers
 exports.getProducts = async (req, res) => {
     try {
@@ -170,9 +143,6 @@ exports.getProducts = async (req, res) => {
         if (minRating) {
             query.rating = { $gte: Number(minRating) };
         }
-
-        // Add stock check for public API
-        query.stock = { $gt: 0 };
 
         let products = Product.find(query);
 
