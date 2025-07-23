@@ -60,6 +60,7 @@ const Products = () => {
             description: product.description || '',
             manufacturer: product.manufacturer || '',
             usage: product.usage || '',
+            categories: product.categories || '',
         });
         setShowEditModal(true);
     };
@@ -226,6 +227,7 @@ const Products = () => {
                         <div className="space-y-3 sm:space-y-4">
                             <input name="name" value={editForm.name} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Name" />
                             <input name="price" value={editForm.price} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Price" type="number" />
+                            <input name="categories" value={editForm.categories || ''} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Categories (comma separated)" />
                             <input name="image" value={editForm.image} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Image URL" />
                             <textarea name="description" value={editForm.description} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Description" rows={2} />
                             <input name="manufacturer" value={editForm.manufacturer} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Manufacturer" />
