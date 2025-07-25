@@ -40,7 +40,7 @@ const OrderConfirmation = () => {
         </div>
         <div className="text-right">
           <h2 className="text-3xl font-bold text-gray-700 uppercase">Invoice</h2>
-          <p className="mt-1">Invoice #: <span className="font-semibold text-black">{order.id}</span></p>
+          <p className="mt-1">Invoice #: <span className="font-semibold text-black">{order._id}</span></p>
           <p>Date: <span className="font-semibold text-black">{new Date().toLocaleDateString()}</span></p>
         </div>
       </div>
