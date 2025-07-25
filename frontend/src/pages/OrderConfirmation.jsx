@@ -27,8 +27,8 @@ const OrderConfirmation = () => {
     <div className="hidden print:block font-sans text-gray-800 p-8">
       <div className="border-b-2 border-gray-300 pb-4 mb-8">
         <h1 className="text-4xl font-bold text-black mb-1">Karan Homeo Pharmacy</h1>
-        <p className="text-sm text-gray-600">123 Wellness Avenue, Health City, ST 12345</p>
-        <p className="text-sm text-gray-600">contact@karanhomeopharmacy.com | (123) 456-7890</p>
+        <p className="text-sm text-gray-600"> Sua Road, near, new railway phatak, Bhai Himmat Singh Nagar, Lapar Market, Baba Deep Singh Nagar, Ludhiana, Punjab 141013</p>
+        <p className="text-sm text-gray-600">contact@karanhomeopharmacy.com | +91 7986834022</p>
       </div>
 
       <div className="flex justify-between items-start mb-10">
