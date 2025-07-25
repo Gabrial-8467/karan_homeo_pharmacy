@@ -10,6 +10,11 @@ const OrderConfirmation = () => {
   const [validOrder, setValidOrder] = useState(order);
   const [loading, setLoading] = useState(false);
 
+  // Add the missing handlePrint function
+  const handlePrint = () => {
+    window.print();
+  };
+
   useEffect(() => {
     if (order && (order._id || order.id)) {
       setLoading(true);
