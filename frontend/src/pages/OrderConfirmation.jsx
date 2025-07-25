@@ -20,6 +20,8 @@ const OrderConfirmation = () => {
     );
   }
 
+  const DELIVERY_CHARGE = 50;
+
   // Enhanced Printable Bill Component
   const PrintableBill = () => (
     <div className="hidden print:block font-sans text-gray-800 p-8">
@@ -61,6 +63,10 @@ const OrderConfirmation = () => {
               <td className="p-3 text-right">₹{(item.price * item.quantity).toFixed(2)}</td>
             </tr>
           ))}
+          <tr>
+            <td colSpan="3" className="text-right font-bold text-base p-3">Delivery Charges</td>
+            <td className="text-right font-bold text-base p-3">₹{DELIVERY_CHARGE.toFixed(2)}</td>
+          </tr>
         </tbody>
         <tfoot>
           <tr>
@@ -112,6 +118,14 @@ const OrderConfirmation = () => {
             <div className="w-full md:w-1/2">
               <div className="flex justify-between font-bold">
                 <span>Total</span>
+                <span> ₹{order.totalPrice ? (order.totalPrice - DELIVERY_CHARGE).toFixed(2) : '0.00'}</span>
+              </div>
+              <div className="flex justify-between font-bold mt-2">
+                <span>Delivery Charges</span>
+                <span> ₹{DELIVERY_CHARGE.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between font-bold mt-2 border-t pt-2">
+                <span>Grand Total</span>
                 <span> ₹{order.totalPrice ? order.totalPrice.toFixed(2) : '0.00'}</span>
               </div>
             </div>
