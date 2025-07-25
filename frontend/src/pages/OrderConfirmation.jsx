@@ -1,15 +1,42 @@
 import { FiCheckCircle, FiShoppingCart, FiPrinter } from 'react-icons/fi';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import api from '../api/axios';
 
 const OrderConfirmation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { order } = location.state || {};
+  const [validOrder, setValidOrder] = useState(order);
+  const [loading, setLoading] = useState(false);
 
-  const handlePrint = () => {
-    window.print();
-  };
+  useEffect(() => {
+    if (order && (order._id || order.id)) {
+      setLoading(true);
+      api.get(`/orders/${order._id || order.id}`)
+        .then(res => {
+          if (res.data.data && res.data.data.orderStatus !== 'Cancelled') {
+            setValidOrder(res.data.data);
+          } else {
+            setValidOrder(null);
+          }
+        })
+        .catch(() => setValidOrder(null))
+        .finally(() => setLoading(false));
+    } else {
+      setValidOrder(null);
+    }
+  }, [order]);
 
-  if (!order || !order.orderItems) {
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h2 className="text-2xl font-bold mb-4">Loading order details...</h2>
+      </div>
+    );
+  }
+
+  if (!validOrder || !validOrder.orderItems) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h2 className="text-2xl font-bold mb-4">No order details found.</h2>
@@ -34,13 +61,13 @@ const OrderConfirmation = () => {
       <div className="flex justify-between items-start mb-10">
         <div>
           <h3 className="font-bold text-lg mb-2">BILL TO</h3>
-          <p>{order.shippingAddress.name}</p>
-          <p>{order.shippingAddress.address}</p>
-          <p>{order.shippingAddress.city}, {order.shippingAddress.postalCode}</p>
+          <p>{validOrder.shippingAddress.name}</p>
+          <p>{validOrder.shippingAddress.address}</p>
+          <p>{validOrder.shippingAddress.city}, {validOrder.shippingAddress.postalCode}</p>
         </div>
         <div className="text-right">
           <h2 className="text-3xl font-bold text-gray-700 uppercase">Invoice</h2>
-          <p className="mt-1">Invoice #: <span className="font-semibold text-black">{order._id}</span></p>
+          <p className="mt-1">Invoice #: <span className="font-semibold text-black">{validOrder._id}</span></p>
           <p>Date: <span className="font-semibold text-black">{new Date().toLocaleDateString()}</span></p>
         </div>
       </div>
@@ -55,7 +82,7 @@ const OrderConfirmation = () => {
           </tr>
         </thead>
         <tbody>
-          {order.orderItems && order.orderItems.map((item) => (
+          {validOrder.orderItems && validOrder.orderItems.map((item) => (
             <tr key={item.id || item._id} className="border-b border-gray-200">
               <td className="p-3">{item.name}</td>
               <td className="p-3 text-center">{item.quantity}</td>
@@ -74,7 +101,7 @@ const OrderConfirmation = () => {
               Grand Total
             </td>
             <td className="text-right font-bold text-lg p-3 border-t-2 border-gray-300">
-              ₹{order.totalPrice ? order.totalPrice.toFixed(2) : '0.00'}
+              ₹{validOrder.totalPrice ? validOrder.totalPrice.toFixed(2) : '0.00'}
             </td>
           </tr>
         </tfoot>
@@ -97,14 +124,14 @@ const OrderConfirmation = () => {
         <div className="text-center">
           <FiCheckCircle className="text-green-500 text-4xl sm:text-6xl mx-auto mb-4" />
           <h2 className="text-2xl sm:text-3xl font-extrabold text-green-600 mb-2">Thank You For Your Order!</h2>
-          <p className="text-gray-700 mb-4 sm:mb-6 text-sm sm:text-base">Your order has been placed successfully. Order ID: <strong>{order._id}</strong></p>
+          <p className="text-gray-700 mb-4 sm:mb-6 text-sm sm:text-base">Your order has been placed successfully. Order ID: <strong>{validOrder._id}</strong></p>
         </div>
 
         {/* --- Order Details (Styled for both screen and print) --- */}
         <div className="text-left border-t pt-4 sm:pt-6 mb-4 sm:mb-6">
           <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-4">Order Summary</h3>
           <div className="space-y-3 sm:space-y-4">
-            {order.orderItems && order.orderItems.map((item) => (
+            {validOrder.orderItems && validOrder.orderItems.map((item) => (
               <div key={item.id || item._id} className="flex justify-between items-center border-b pb-2">
                 <div>
                   <p className="font-semibold text-sm sm:text-base">{item.name}</p>
@@ -118,7 +145,7 @@ const OrderConfirmation = () => {
             <div className="w-full md:w-1/2">
               <div className="flex justify-between font-bold">
                 <span>Total</span>
-                <span> ₹{order.totalPrice ? (order.totalPrice - DELIVERY_CHARGE).toFixed(2) : '0.00'}</span>
+                <span> ₹{validOrder.totalPrice ? (validOrder.totalPrice - DELIVERY_CHARGE).toFixed(2) : '0.00'}</span>
               </div>
               <div className="flex justify-between font-bold mt-2">
                 <span>Delivery Charges</span>
@@ -126,7 +153,7 @@ const OrderConfirmation = () => {
               </div>
               <div className="flex justify-between font-bold mt-2 border-t pt-2">
                 <span>Grand Total</span>
-                <span> ₹{order.totalPrice ? order.totalPrice.toFixed(2) : '0.00'}</span>
+                <span> ₹{validOrder.totalPrice ? validOrder.totalPrice.toFixed(2) : '0.00'}</span>
               </div>
             </div>
           </div>
@@ -135,9 +162,9 @@ const OrderConfirmation = () => {
         <div className="text-left border-t pt-4 sm:pt-6">
           <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-4">Shipping to:</h3>
           <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
-            <p className="font-semibold text-sm sm:text-base">{order.shippingAddress.name}</p>
-            <p className="text-sm sm:text-base">{order.shippingAddress.address}</p>
-            <p className="text-sm sm:text-base">{order.shippingAddress.city}, {order.shippingAddress.postalCode}</p>
+            <p className="font-semibold text-sm sm:text-base">{validOrder.shippingAddress.name}</p>
+            <p className="text-sm sm:text-base">{validOrder.shippingAddress.address}</p>
+            <p className="text-sm sm:text-base">{validOrder.shippingAddress.city}, {validOrder.shippingAddress.postalCode}</p>
           </div>
         </div>
 
