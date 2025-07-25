@@ -97,7 +97,7 @@ const OrderConfirmation = () => {
         <div className="text-center">
           <FiCheckCircle className="text-green-500 text-4xl sm:text-6xl mx-auto mb-4" />
           <h2 className="text-2xl sm:text-3xl font-extrabold text-green-600 mb-2">Thank You For Your Order!</h2>
-          <p className="text-gray-700 mb-4 sm:mb-6 text-sm sm:text-base">Your order has been placed successfully. Order ID: <strong>{order.id}</strong></p>
+          <p className="text-gray-700 mb-4 sm:mb-6 text-sm sm:text-base">Your order has been placed successfully. Order ID: <strong>{order._id}</strong></p>
         </div>
 
         {/* --- Order Details (Styled for both screen and print) --- */}
