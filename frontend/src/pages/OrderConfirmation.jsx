@@ -20,8 +20,6 @@ const OrderConfirmation = () => {
     );
   }
 
-  const DELIVERY_CHARGE = 50;
-
   // Enhanced Printable Bill Component
   const PrintableBill = () => (
     <div className="hidden print:block font-sans text-gray-800 p-8">
@@ -66,15 +64,11 @@ const OrderConfirmation = () => {
         </tbody>
         <tfoot>
           <tr>
-            <td colSpan="3" className="text-right font-bold text-base p-3">Delivery Charges</td>
-            <td className="text-right font-bold text-base p-3">₹{DELIVERY_CHARGE.toFixed(2)}</td>
-          </tr>
-          <tr>
             <td colSpan="3" className="text-right font-bold text-lg p-3 border-t-2 border-gray-300">
               Grand Total
             </td>
             <td className="text-right font-bold text-lg p-3 border-t-2 border-gray-300">
-              ₹{order.totalPrice ? (order.totalPrice + DELIVERY_CHARGE).toFixed(2) : DELIVERY_CHARGE.toFixed(2)}
+              ₹{order.totalPrice ? order.totalPrice.toFixed(2) : '0.00'}
             </td>
           </tr>
         </tfoot>
@@ -119,14 +113,6 @@ const OrderConfirmation = () => {
               <div className="flex justify-between font-bold">
                 <span>Total</span>
                 <span> ₹{order.totalPrice ? order.totalPrice.toFixed(2) : '0.00'}</span>
-              </div>
-              <div className="flex justify-between font-bold mt-2">
-                <span>Delivery Charges</span>
-                <span> ₹{DELIVERY_CHARGE.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between font-bold mt-2 border-t pt-2">
-                <span>Grand Total</span>
-                <span> ₹{order.totalPrice ? (order.totalPrice + DELIVERY_CHARGE).toFixed(2) : DELIVERY_CHARGE.toFixed(2)}</span>
               </div>
             </div>
           </div>
