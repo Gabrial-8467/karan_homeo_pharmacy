@@ -167,9 +167,13 @@ const ProductDetails = () => {
     );
   }
 
-  // Related products: same category, not the current product
+  // Related products: same categories, not the current product
   const relatedProducts = products
-    .filter(p => p._id !== product._id && p.category === product.category)
+    .filter(p => {
+      if (p._id === product._id) return false;
+      if (!Array.isArray(p.categories) || !Array.isArray(product.categories)) return false;
+      return p.categories.some(cat => product.categories.includes(cat));
+    })
     .slice(0, 4);
 
   return (
@@ -257,7 +261,7 @@ const ProductDetails = () => {
       </div>
 
       {/* Related Products */}
-      {relatedProducts.length > 0 && (
+      {products.length > 0 && relatedProducts.length > 0 && (
         <div className="mt-16">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">You may also like</h2>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -269,18 +273,18 @@ const ProductDetails = () => {
                   </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-gray-800 truncate" title={rp.name}>{rp.name}</h3>
-                    <p className="text-sm text-gray-600 mt-1 line-clamp-2 h-[40px]" title={product.description}>
-                      {product.description
-                        ? product.description
-                          .split('\n')
-                          .filter(line => {
-                            const trimmed = line.trim();
-                            // Filter out heading lines (lines starting with #)
-                            return trimmed && !trimmed.startsWith('#');
-                          })
-                          .map(line => line.replace(/^\s*[-*•]\s*/, ''))
-                          .filter(Boolean)
-                          .join(' ')
+                    <p className="text-sm text-gray-600 mt-1 line-clamp-2 h-[40px]" title={rp.description}>
+                      {rp.description
+                        ? rp.description
+                            .split('\n')
+                            .filter(line => {
+                              const trimmed = line.trim();
+                              // Filter out heading lines (lines starting with #)
+                              return trimmed && !trimmed.startsWith('#');
+                            })
+                            .map(line => line.replace(/^\s*[-*•]\s*/, ''))
+                            .filter(Boolean)
+                            .join(' ')
                         : ''}
                     </p>
                     <p className="text-blue-600 font-bold mt-1">₹{rp.price}</p>

@@ -60,7 +60,7 @@ const Products = () => {
             description: product.description || '',
             manufacturer: product.manufacturer || '',
             usage: product.usage || '',
-            categories: product.categories || '',
+            categories: Array.isArray(product.categories) ? product.categories.join(', ') : '',
         });
         setShowEditModal(true);
     };
@@ -71,7 +71,12 @@ const Products = () => {
 
     const handleEditSave = async () => {
         try {
-            await api.put(`/products/${editingProduct._id}`, editForm);
+            const updatedData = {
+                ...editForm,
+                price: Number(editForm.price),
+                categories: editForm.categories.split(',').map(c => c.trim()).filter(Boolean),
+            };
+            await api.put(`/products/${editingProduct._id}`, updatedData);
             toast.success('Product updated!');
             setShowEditModal(false);
             fetchProducts();
@@ -152,25 +157,38 @@ const Products = () => {
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                            <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manufacturer</th>
+                            <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categories</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usage</th>
                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {loading ? (
-                            <tr><td colSpan={7} className="text-center py-6">Loading...</td></tr>
+                            <tr>
+                                <td colSpan={7} className="text-center py-8">
+                                    <div className="flex items-center justify-center">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                        <span className="ml-3 text-gray-600">Loading products...</span>
+                                    </div>
+                                </td>
+                            </tr>
                         ) : products.length === 0 ? (
                             <tr><td colSpan={7} className="text-center py-6 text-gray-400">No products found.</td></tr>
                         ) : (
                             products.map(product => (
                                 <tr key={product._id} className="hover:bg-gray-50">
-                                    <td className="px-2 sm:px-6 py-2 sm:py-4"><img src={getImageUrl(product.image)} alt={product.name} className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded bg-gray-100" /></td>
+                                    <td className="px-2 sm:px-6 py-2 sm:py-4">
+                                        <img src={getImageUrl(product.image)} alt={product.name} className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded bg-gray-100" />
+                                    </td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4 font-semibold text-gray-800">{product.name}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4">₹{product.price}</td>
-                                    <td className="px-2 sm:px-6 py-2 sm:py-4">{product.description}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4">{product.manufacturer || '-'}</td>
+                                    <td className="px-2 sm:px-6 py-2 sm:py-4">
+                                        {Array.isArray(product.categories) && product.categories.length > 0 
+                                            ? product.categories.join(', ') 
+                                            : '-'}
+                                    </td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4">{product.usage || '-'}</td>
                                     <td className="px-2 sm:px-6 py-2 sm:py-4 text-center flex gap-2 justify-center">
                                         <button onClick={() => handleEditClick(product)} className="p-2 rounded bg-blue-100 hover:bg-blue-200 text-blue-700"><FiEdit /></button>
