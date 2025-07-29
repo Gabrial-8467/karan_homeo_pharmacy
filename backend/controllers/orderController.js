@@ -120,6 +120,17 @@ exports.createOrder = async (req, res) => {
 
         const createdOrder = await order.save();
         
+        // Emit real-time notification to admin
+        if (req.io) {
+            req.io.to('admin').emit('new-order', {
+                orderId: createdOrder._id,
+                customerName: req.user.name,
+                totalPrice: createdOrder.totalPrice,
+                orderStatus: createdOrder.orderStatus,
+                createdAt: createdOrder.createdAt
+            });
+        }
+        
         res.status(201).json({
             success: true,
             data: createdOrder

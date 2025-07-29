@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { FiBox, FiShoppingCart, FiDollarSign, FiAlertTriangle } from 'react-icons/fi';
+import { FiPackage, FiShoppingCart, FiDollarSign, FiTrendingUp } from 'react-icons/fi';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { io } from 'socket.io-client';
 
 const api = axios.create({ baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api` });
 
@@ -9,9 +10,41 @@ const Dashboard = () => {
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [newOrdersNotification, setNewOrdersNotification] = useState(false);
 
     useEffect(() => {
         fetchData();
+        
+        // Initialize Socket.io connection
+        const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
+            transports: ['websocket', 'polling']
+        });
+
+        // Join admin room
+        socket.emit('join-admin');
+
+        // Listen for new orders
+        socket.on('new-order', (orderData) => {
+            toast.success(`New order received from ${orderData.customerName}! Order ID: ${orderData.orderId}`);
+            setNewOrdersNotification(true);
+            setTimeout(() => setNewOrdersNotification(false), 5000);
+            
+            // Refresh dashboard data
+            fetchData();
+        });
+
+        // Handle connection events
+        socket.on('connect', () => {
+            console.log('Connected to server');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+        });
+
+        return () => {
+            socket.disconnect();
+        };
     }, []);
 
     const fetchData = async () => {
@@ -41,7 +74,7 @@ const Dashboard = () => {
             <h1 className="text-xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-8">Dashboard</h1>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-10">
                 <div className="flex items-center gap-3 sm:gap-4 bg-blue-50 p-4 sm:p-6 rounded-xl shadow">
-                    <FiBox className="text-blue-600 text-2xl sm:text-3xl" />
+                    <FiPackage className="text-blue-600 text-2xl sm:text-3xl" />
                     <div>
                         <div className="text-lg sm:text-2xl font-bold">{totalProducts}</div>
                         <div className="text-gray-600 text-xs sm:text-base">Products</div>

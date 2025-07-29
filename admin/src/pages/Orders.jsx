@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { FiEye, FiTrash2, FiRefreshCw, FiCheck, FiX } from 'react-icons/fi';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { io } from 'socket.io-client';
 
 const api = axios.create({ baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api` });
 
@@ -19,9 +20,41 @@ const Orders = () => {
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [statusLoading, setStatusLoading] = useState(false);
+    const [newOrdersNotification, setNewOrdersNotification] = useState(false);
 
     useEffect(() => {
         fetchOrders();
+        
+        // Initialize Socket.io connection
+        const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
+            transports: ['websocket', 'polling']
+        });
+
+        // Join admin room
+        socket.emit('join-admin');
+
+        // Listen for new orders
+        socket.on('new-order', (orderData) => {
+            toast.success(`New order received from ${orderData.customerName}! Order ID: ${orderData.orderId}`);
+            setNewOrdersNotification(true);
+            setTimeout(() => setNewOrdersNotification(false), 5000);
+            
+            // Refresh orders list
+            fetchOrders();
+        });
+
+        // Handle connection events
+        socket.on('connect', () => {
+            console.log('Connected to server');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+        });
+
+        return () => {
+            socket.disconnect();
+        };
     }, []);
 
     const fetchOrders = async () => {
