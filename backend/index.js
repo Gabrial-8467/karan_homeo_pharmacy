@@ -27,6 +27,7 @@ const io = new Server(server, {
         origin: [
             'https://karan-homeo-pharmacy.vercel.app',
             'https://karan-homeo-pharmacy-18po.vercel.app',
+            'https://khpadmin.vercel.app/',
             'http://localhost:3000',
             'http://localhost:5173'
         ],
@@ -42,6 +43,7 @@ app.use(cors({
   origin: [
     'https://karan-homeo-pharmacy.vercel.app',
     'https://karan-homeo-pharmacy-18po.vercel.app',
+    'https://khpadmin.vercel.app/',
     'http://localhost:3000'
   ],
   credentials: true
