@@ -13,6 +13,7 @@ export default defineConfig({
     react(),
   ],
   build: {
+    minify: 'esbuild',  // ✅ Explicitly use esbuild instead of terser
     rollupOptions: {
       output: {
         manualChunks: {
