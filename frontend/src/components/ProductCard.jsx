@@ -77,7 +77,12 @@ const ProductCard = ({ product }) => {
           {product.description
             ? product.description
                 .split('\n')
-                .map(line => line.replace(/^\s*(#{1,6}|[-*•])\s*/, ''))
+                .filter(line => {
+                  const trimmed = line.trim();
+                  // Filter out heading lines (lines starting with #)
+                  return trimmed && !trimmed.startsWith('#');
+                })
+                .map(line => line.replace(/^\s*[-*•]\s*/, ''))
                 .filter(Boolean)
                 .join(' ')
             : ''}
