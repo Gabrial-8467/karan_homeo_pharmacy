@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/OrderConfirmation';
 import OrderHistory from './pages/OrderHistory'; // Import the new page
+import NotFound from './pages/NotFound'; // Import the 404 page
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { StoreProvider } from './context/storeContext';
 import Footer from './components/Footer';
@@ -48,6 +49,8 @@ function App() {
                 <OrderHistory />
               </PrivateRoute>
             } />
+            {/* 404 Catch-all route - must be last */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />
           <Analytics />
