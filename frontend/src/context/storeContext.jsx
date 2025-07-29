@@ -9,6 +9,7 @@ export const useStore = () => useContext(StoreContext);
 export const StoreProvider = ({ children }) => {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [cart, setCart] = useState(() => {
         try {
             const savedCart = localStorage.getItem('cart');
@@ -35,9 +36,10 @@ export const StoreProvider = ({ children }) => {
         }
     });
 
-    // Refactored: fetchProducts function
+    // Refactored: fetchProducts function with loading state
     const fetchProducts = async () => {
         try {
+            setLoading(true);
             const productsRes = await api.get('/products');
             const fetchedProducts = productsRes.data.data;
             setProducts(fetchedProducts);
@@ -56,12 +58,19 @@ export const StoreProvider = ({ children }) => {
         } catch (error) {
             console.error('Failed to fetch products:', error);
             toast.error('Could not load products.');
+        } finally {
+            setLoading(false);
         }
     };
 
-    // Call fetchProducts on mount
+    // Call fetchProducts on mount with a small delay to prioritize FCP
     useEffect(() => {
-        fetchProducts();
+        // Small delay to allow initial render to complete
+        const timer = setTimeout(() => {
+            fetchProducts();
+        }, 100);
+        
+        return () => clearTimeout(timer);
     }, []);
 
     // Save cart to local storage whenever it changes
@@ -99,7 +108,7 @@ export const StoreProvider = ({ children }) => {
         setCart(prevCart => {
             const itemToRemove = prevCart.find(item => item._id === productId);
             if (itemToRemove) {
-                toast.error(`${itemToRemove.name} removed from cart.`);
+                toast.success(`${itemToRemove.name} removed from cart.`);
             }
             return prevCart.filter(item => item._id !== productId);
         });
@@ -107,20 +116,32 @@ export const StoreProvider = ({ children }) => {
 
     const clearCart = () => {
         setCart([]);
-        localStorage.removeItem('cart');
-        toast.success('Cart has been cleared.');
+        toast.success('Cart cleared.');
     };
 
-    const store = {
-        products,
-        categories,
-        cart,
-        addToCart,
-        updateCartQuantity,
-        removeFromCart,
-        clearCart,
-        fetchProducts, // Export fetchProducts in context
+    const getCartTotal = () => {
+        return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
     };
 
-    return <StoreContext.Provider value={store}>{children}</StoreContext.Provider>;
+    const getCartItemCount = () => {
+        return cart.reduce((count, item) => count + item.quantity, 0);
+    };
+
+    return (
+        <StoreContext.Provider value={{
+            products,
+            categories,
+            loading,
+            cart,
+            addToCart,
+            updateCartQuantity,
+            removeFromCart,
+            clearCart,
+            getCartTotal,
+            getCartItemCount,
+            fetchProducts
+        }}>
+            {children}
+        </StoreContext.Provider>
+    );
 };

@@ -4,6 +4,37 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Performance Optimizations -->
+    <link rel="preconnect" href="https://karan-homeo-pharmacy.onrender.com" />
+    <link rel="dns-prefetch" href="https://karan-homeo-pharmacy.onrender.com" />
+    <link rel="preload" href="/src/main.jsx" as="script" />
+    
+    <!-- Critical CSS for above-the-fold content -->
+    <style>
+      /* Critical CSS for immediate visual feedback */
+      body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
+      #root { min-height: 100vh; }
+      .loading-skeleton { 
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+      }
+      @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+      .hero-skeleton {
+        height: 400px;
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1e40af;
+        font-size: 2rem;
+        font-weight: bold;
+      }
+    </style>
+
     <!-- Primary Meta Tags -->
     <title>Karan Homeo Pharmacy | Trusted Homeopathy in Ludhiana</title>
     <meta name="title" content="Karan Homeo Pharmacy | Trusted Homeopathy in Ludhiana">
@@ -25,10 +56,10 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="shortcut icon" href="/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Canonical URL -->
     <link rel="canonical" href="https://karan-homeo-pharmacy.vercel.app/" />
@@ -57,7 +88,12 @@
     <script type="module" src="/src/main.jsx"></script>
   </head>
   <body>
-    <div id="root"></div>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <div id="root">
+      <!-- Loading skeleton for immediate visual feedback -->
+      <div class="hero-skeleton">
+        <div>Karan Homeo Pharmacy</div>
+      </div>
+    </div>
+    <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
   </body>
 </html>
