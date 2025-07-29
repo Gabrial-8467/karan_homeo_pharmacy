@@ -53,7 +53,7 @@ const Home = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
                                 {products
                                     .filter(p => Array.isArray(p.categories) && p.categories.includes(cat.name))
-                                    .slice(0, 6)
+                                    .slice(0, 8)
                                     .map((product) => (
                                         <ProductCard key={product._id} product={product} />
                                     ))}
