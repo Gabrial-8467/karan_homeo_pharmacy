@@ -112,7 +112,7 @@ const Home = () => {
             
             {/* Shop by Category - Show loading or content */}
             <section className="w-full max-w-6xl px-3 sm:px-8 py-8 sm:py-12">
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-blue-700 mb-6 sm:mb-8 text-center tracking-tight drop-shadow">Homeopathic Medicines by Category</h2>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-blue-700 mb-6 sm:mb-8 text-center tracking-tight drop-shadow">PRODUCTS</h2>
                 
                 {loading ? (
                     <LoadingSkeleton />
