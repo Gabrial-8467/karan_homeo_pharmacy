@@ -58,7 +58,7 @@ const Home = () => {
                             displayedCategories.map((cat) => (
                                 <div key={cat._id} className="mb-8">
                                     <h3 className="text-xl sm:text-2xl font-bold text-blue-700 mb-4 sm:mb-6">{cat.name}</h3>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-8">
                                         {products
                                             .filter(p => Array.isArray(p.categories) && p.categories.includes(cat.name))
                                             .slice(0, 6)
