@@ -10,14 +10,9 @@ const Home = () => {
     // Display all categories found in the products
     const displayedCategories = categories;
 
-    // Show loading skeleton if still loading
-    if (loading) {
-        return <LoadingSkeleton />;
-    }
-
     return (
         <div className="min-h-screen w-full bg-gradient-to-br from-blue-100 via-blue-50 to-blue-200 flex flex-col items-center">
-            {/* Hero Section */}
+            {/* Hero Section - Always visible for better FCP */}
             <section className="w-full flex flex-col md:flex-row items-center justify-between px-3 sm:px-4 md:px-8 py-10 sm:py-16 md:py-20 max-w-6xl mx-auto gap-8">
                 <div className="flex-1 text-center md:text-left">
                     <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-800 mb-4 drop-shadow leading-tight">
@@ -35,7 +30,7 @@ const Home = () => {
                 </div>
             </section>
             
-            {/* Trust Badges / Benefits */}
+            {/* Trust Badges / Benefits - Always visible */}
             <section className="w-full max-w-4xl px-3 sm:px-8 py-4 sm:py-6 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
                 <div className="flex flex-col items-center text-center">
                     <FiShield className="text-blue-700 mb-2" size={28} />
@@ -51,30 +46,35 @@ const Home = () => {
                 </div>
             </section>
             
-            {/* Shop by Category */}
+            {/* Shop by Category - Show loading or content */}
             <section className="w-full max-w-6xl px-3 sm:px-8 py-8 sm:py-12">
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-blue-700 mb-6 sm:mb-8 text-center tracking-tight drop-shadow">Shop by Category</h2>
-                <div className="space-y-8 sm:space-y-12">
-                    {displayedCategories.length > 0 ? (
-                        displayedCategories.map((cat) => (
-                            <div key={cat._id} className="mb-8">
-                                <h3 className="text-xl sm:text-2xl font-bold text-blue-700 mb-4 sm:mb-6">{cat.name}</h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
-                                    {products
-                                        .filter(p => Array.isArray(p.categories) && p.categories.includes(cat.name))
-                                        .slice(0, 6)
-                                        .map((product) => (
-                                            <ProductCard key={product._id} product={product} />
-                                        ))}
+                
+                {loading ? (
+                    <LoadingSkeleton />
+                ) : (
+                    <div className="space-y-8 sm:space-y-12">
+                        {displayedCategories.length > 0 ? (
+                            displayedCategories.map((cat) => (
+                                <div key={cat._id} className="mb-8">
+                                    <h3 className="text-xl sm:text-2xl font-bold text-blue-700 mb-4 sm:mb-6">{cat.name}</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
+                                        {products
+                                            .filter(p => Array.isArray(p.categories) && p.categories.includes(cat.name))
+                                            .slice(0, 6)
+                                            .map((product) => (
+                                                <ProductCard key={product._id} product={product} />
+                                            ))}
+                                    </div>
                                 </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-12">
+                                <p className="text-gray-600 text-lg">No products available at the moment.</p>
                             </div>
-                        ))
-                    ) : (
-                        <div className="text-center py-12">
-                            <p className="text-gray-600 text-lg">No products available at the moment.</p>
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </div>
+                )}
             </section>
         </div>
     );

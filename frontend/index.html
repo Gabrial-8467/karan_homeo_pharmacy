@@ -36,9 +36,10 @@
     </style>
 
     <!-- Primary Meta Tags -->
-    <title>Karan Homeo Pharmacy | Trusted Homeopathy in Ludhiana</title>
+    <title>Karan Homeo Pharmacy - Genuine Homeopathic Medicines</title>
     <meta name="title" content="Karan Homeo Pharmacy | Trusted Homeopathy in Ludhiana">
-    <meta name="description" content="Karan Homeo Pharmacy offers expert homeopathy treatment in Ludhiana. Book appointments, get consultations, and order remedies online. Natural healing, trusted care.">
+    <meta name="description" content="Karan Homeo Pharmacy - Your trusted source for genuine homeopathic medicines. Fast delivery and secure payments." />
+    <meta name="theme-color" content="#1e40af" />
     <meta name="keywords" content="Homeopathy, Homeopathy in Ludhiana, Homeo Clinic, Best Homeo Doctor, Natural Healing, Karan Homeo Pharmacy, Homeopathy Treatment, Online Homeopathy">
     <meta name="author" content="Karan Homeo Pharmacy">
 
@@ -84,8 +85,16 @@
     }
     </script>
 
-    <!-- Entry point script -->
-    <script type="module" src="/src/main.jsx"></script>
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/src/index.css" as="style" />
+    <link rel="preload" href="/src/main.jsx" as="script" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- DNS prefetch for API calls -->
+    <link rel="dns-prefetch" href="//localhost:5000" />
   </head>
   <body>
     <div id="root">
@@ -94,6 +103,7 @@
         <div>Karan Homeo Pharmacy</div>
       </div>
     </div>
+    <script type="module" src="/src/main.jsx"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
   </body>
 </html>

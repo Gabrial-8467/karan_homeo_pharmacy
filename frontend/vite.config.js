@@ -20,13 +20,24 @@ export default defineConfig({
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
           icons: ['react-icons'],
-          utils: ['react-hot-toast']
+          utils: ['react-hot-toast'],
+          analytics: ['@vercel/analytics/react']
         }
       }
     },
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
+    // Optimize for better performance
+    target: 'esnext',
+    sourcemap: false, // Disable sourcemaps in production
+    cssCodeSplit: true,
+    reportCompressedSize: false, // Faster builds
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom']
+    include: ['react', 'react-dom', 'react-router-dom'],
+    exclude: ['@vercel/analytics/react'] // Exclude from pre-bundling
+  },
+  // Performance optimizations
+  esbuild: {
+    drop: ['console', 'debugger'], // Remove console logs in production
   }
 })

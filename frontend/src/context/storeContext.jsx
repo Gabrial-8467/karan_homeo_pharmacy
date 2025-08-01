@@ -9,7 +9,7 @@ export const useStore = () => useContext(StoreContext);
 export const StoreProvider = ({ children }) => {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false); // Changed to false for better FCP
     const [cart, setCart] = useState(() => {
         try {
             const savedCart = localStorage.getItem('cart');
@@ -36,7 +36,7 @@ export const StoreProvider = ({ children }) => {
         }
     });
 
-    // Refactored: fetchProducts function with loading state
+    // Optimized: fetchProducts function with non-blocking loading
     const fetchProducts = async () => {
         try {
             setLoading(true);
@@ -63,14 +63,9 @@ export const StoreProvider = ({ children }) => {
         }
     };
 
-    // Call fetchProducts on mount with a small delay to prioritize FCP
+    // Optimized: Fetch products immediately without delay for better UX
     useEffect(() => {
-        // Small delay to allow initial render to complete
-        const timer = setTimeout(() => {
-            fetchProducts();
-        }, 100);
-        
-        return () => clearTimeout(timer);
+        fetchProducts();
     }, []);
 
     // Save cart to local storage whenever it changes
@@ -105,13 +100,8 @@ export const StoreProvider = ({ children }) => {
     };
 
     const removeFromCart = (productId) => {
-        setCart(prevCart => {
-            const itemToRemove = prevCart.find(item => item._id === productId);
-            if (itemToRemove) {
-                toast.success(`${itemToRemove.name} removed from cart.`);
-            }
-            return prevCart.filter(item => item._id !== productId);
-        });
+        setCart(prevCart => prevCart.filter(item => item._id !== productId));
+        toast.success('Item removed from cart.');
     };
 
     const clearCart = () => {
@@ -127,20 +117,22 @@ export const StoreProvider = ({ children }) => {
         return cart.reduce((count, item) => count + item.quantity, 0);
     };
 
+    const value = {
+        products,
+        categories,
+        loading,
+        cart,
+        addToCart,
+        updateCartQuantity,
+        removeFromCart,
+        clearCart,
+        getCartTotal,
+        getCartItemCount,
+        fetchProducts // Expose for manual refresh
+    };
+
     return (
-        <StoreContext.Provider value={{
-            products,
-            categories,
-            loading,
-            cart,
-            addToCart,
-            updateCartQuantity,
-            removeFromCart,
-            clearCart,
-            getCartTotal,
-            getCartItemCount,
-            fetchProducts
-        }}>
+        <StoreContext.Provider value={value}>
             {children}
         </StoreContext.Provider>
     );
