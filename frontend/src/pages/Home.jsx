@@ -109,44 +109,12 @@ const Home = () => {
                     </div>
                 </div>
             </section>
-            
-            {/* Shop by Category - Show loading or content */}
-            <section className="w-full max-w-6xl px-3 sm:px-8 py-8 sm:py-12">
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-blue-700 mb-6 sm:mb-8 text-center tracking-tight drop-shadow">PRODUCTS</h2>
-                
-                {loading ? (
-                    <LoadingSkeleton />
-                ) : (
-                    <div className="space-y-8 sm:space-y-12">
-                        {displayedCategories.length > 0 ? (
-                            displayedCategories.map((cat) => (
-                                <div key={cat._id} className="mb-8">
-                                    <h3 className="text-xl sm:text-2xl font-bold text-blue-700 mb-4 sm:mb-6">{cat.name}</h3>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-8">
-                                        {products
-                                            .filter(p => Array.isArray(p.categories) && p.categories.includes(cat.name))
-                                            .slice(0, 6)
-                                            .map((product) => (
-                                                <ProductCard key={product._id} product={product} />
-                                            ))}
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="text-center py-12">
-                                <p className="text-gray-600 text-lg">No products available at the moment.</p>
-                            </div>
-                        )}
-                    </div>
-                )}
-            </section>
-
-            {/* Additional SEO Content - Homeopathy Treatment Information */}
-            <section className="w-full max-w-6xl px-3 sm:px-8 py-8 sm:py-12">
-                <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
                     <h2 className="text-2xl sm:text-3xl font-bold text-blue-700 mb-6 text-center">
                         Homeopathic Treatment & Consultation
                     </h2>
+            {/* Additional SEO Content - Homeopathy Treatment Information */}
+            <section className="w-full max-w-6xl px-3 sm:px-8 py-8 sm:py-12">
+                <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
                     <div className="grid md:grid-cols-2 gap-8">
                         <div>
                             <h3 className="text-xl font-semibold text-blue-600 mb-4">What is Homeopathy?</h3>
@@ -188,6 +156,38 @@ const Home = () => {
                     </div>
                 </div>
             </section>
+            
+            {/* Shop by Category - Show loading or content */}
+            <section className="w-full max-w-6xl px-3 sm:px-8 py-8 sm:py-12">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-blue-700 mb-6 sm:mb-8 text-center tracking-tight drop-shadow">PRODUCTS</h2>
+                
+                {loading ? (
+                    <LoadingSkeleton />
+                ) : (
+                    <div className="space-y-8 sm:space-y-12">
+                        {displayedCategories.length > 0 ? (
+                            displayedCategories.map((cat) => (
+                                <div key={cat._id} className="mb-8">
+                                    <h3 className="text-xl sm:text-2xl font-bold text-blue-700 mb-4 sm:mb-6">{cat.name}</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-8">
+                                        {products
+                                            .filter(p => Array.isArray(p.categories) && p.categories.includes(cat.name))
+                                            .slice(0, 6)
+                                            .map((product) => (
+                                                <ProductCard key={product._id} product={product} />
+                                            ))}
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-12">
+                                <p className="text-gray-600 text-lg">No products available at the moment.</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </section>
+
         </div>
     );
 };
