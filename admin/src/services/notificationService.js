@@ -15,16 +15,18 @@ class NotificationService {
         if ('serviceWorker' in navigator && 'PushManager' in window) {
             try {
                 this.swRegistration = await navigator.serviceWorker.register('/sw.js');
-                console.log('Service Worker registered');
+                console.log('Service Worker registered successfully');
                 
                 // Wait for service worker to be ready
                 await navigator.serviceWorker.ready;
+                console.log('Service Worker is ready');
                 return true;
             } catch (error) {
                 console.error('Service Worker registration failed:', error);
                 return false;
             }
         }
+        console.log('Service Worker or PushManager not supported');
         return false;
     }
 
@@ -52,20 +54,25 @@ class NotificationService {
     // Subscribe to push notifications
     async subscribe() {
         try {
+            console.log('Starting subscription process...');
+            
             // Get VAPID public key
             const vapidPublicKey = await this.getVapidPublicKey();
+            console.log('VAPID public key received');
             
             // Convert VAPID key to Uint8Array
             const vapidKey = this.urlBase64ToUint8Array(vapidPublicKey);
+            console.log('VAPID key converted to Uint8Array');
             
             // Subscribe to push notifications
             const subscription = await this.swRegistration.pushManager.subscribe({
                 userVisibleOnly: true,
                 applicationServerKey: vapidKey
             });
+            console.log('Push subscription created:', subscription);
 
             // Send subscription to server
-            await api.post('/notifications/subscribe', {
+            const response = await api.post('/notifications/subscribe', {
                 endpoint: subscription.endpoint,
                 keys: {
                     p256dh: this.arrayBufferToBase64(subscription.getKey('p256dh')),
@@ -73,11 +80,15 @@ class NotificationService {
                 },
                 userAgent: navigator.userAgent
             });
+            console.log('Subscription saved to server:', response.data);
 
             this.isSubscribed = true;
             return true;
         } catch (error) {
             console.error('Error subscribing to notifications:', error);
+            if (error.response) {
+                console.error('Server error:', error.response.data);
+            }
             throw error;
         }
     }

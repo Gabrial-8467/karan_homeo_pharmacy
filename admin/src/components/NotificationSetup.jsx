@@ -31,12 +31,14 @@ const NotificationSetup = () => {
     const handleSubscribe = async () => {
         setIsLoading(true);
         try {
+            console.log('Requesting notification permission...');
             // Request permission first
             const granted = await notificationService.requestPermission();
             if (!granted) {
-                toast.error('Notification permission denied');
+                toast.error('Notification permission denied. Please enable notifications in your browser settings.');
                 return;
             }
+            console.log('Permission granted, subscribing to notifications...');
 
             // Subscribe to notifications
             await notificationService.subscribe();
@@ -45,7 +47,15 @@ const NotificationSetup = () => {
             toast.success('Push notifications enabled! You will now receive notifications for new orders.');
         } catch (error) {
             console.error('Error subscribing to notifications:', error);
-            toast.error('Failed to enable notifications. Please try again.');
+            let errorMessage = 'Failed to enable notifications. Please try again.';
+            
+            if (error.message) {
+                errorMessage = error.message;
+            } else if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            }
+            
+            toast.error(errorMessage);
         } finally {
             setIsLoading(false);
         }

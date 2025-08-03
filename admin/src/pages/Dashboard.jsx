@@ -4,6 +4,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { io } from 'socket.io-client';
 import NotificationSetup from '../components/NotificationSetup';
+import NotificationTest from '../components/NotificationTest';
 
 const api = axios.create({ baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api` });
 
@@ -76,6 +77,7 @@ const Dashboard = () => {
             
             {/* Notification Setup */}
             <NotificationSetup />
+            <NotificationTest />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-10">
                 <div className="flex items-center gap-3 sm:gap-4 bg-blue-50 p-4 sm:p-6 rounded-xl shadow">
                     <FiPackage className="text-blue-600 text-2xl sm:text-3xl" />

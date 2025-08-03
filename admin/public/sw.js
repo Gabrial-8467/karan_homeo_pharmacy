@@ -4,33 +4,41 @@ self.addEventListener('push', function(event) {
     console.log('Push event received:', event);
     
     if (event.data) {
-        const data = event.data.json();
-        
-        const options = {
-            body: data.body,
-            icon: data.icon || '/favicon-96x96.png',
-            badge: data.badge || '/favicon-96x96.png',
-            data: data.data || {},
-            requireInteraction: true,
-            actions: [
-                {
-                    action: 'view',
-                    title: 'View Order',
-                    icon: '/favicon-96x96.png'
-                },
-                {
-                    action: 'close',
-                    title: 'Close',
-                    icon: '/favicon-96x96.png'
-                }
-            ],
-            tag: 'new-order', // Prevents duplicate notifications
-            renotify: true
-        };
+        try {
+            const data = event.data.json();
+            console.log('Push data:', data);
+            
+            const options = {
+                body: data.body,
+                icon: data.icon || '/favicon-96x96.png',
+                badge: data.badge || '/favicon-96x96.png',
+                data: data.data || {},
+                requireInteraction: true,
+                actions: [
+                    {
+                        action: 'view',
+                        title: 'View Order',
+                        icon: '/favicon-96x96.png'
+                    },
+                    {
+                        action: 'close',
+                        title: 'Close',
+                        icon: '/favicon-96x96.png'
+                    }
+                ],
+                tag: 'new-order', // Prevents duplicate notifications
+                renotify: true
+            };
 
-        event.waitUntil(
-            self.registration.showNotification(data.title, options)
-        );
+            console.log('Showing notification with options:', options);
+            event.waitUntil(
+                self.registration.showNotification(data.title, options)
+            );
+        } catch (error) {
+            console.error('Error processing push event:', error);
+        }
+    } else {
+        console.log('No data in push event');
     }
 });
 
