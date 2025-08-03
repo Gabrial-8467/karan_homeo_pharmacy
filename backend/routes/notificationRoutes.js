@@ -15,22 +15,8 @@ router.get('/test', (req, res) => {
     res.json({ message: 'Notification routes are working!' });
 });
 
-// Debug authentication endpoint
-router.get('/debug-auth', protect, (req, res) => {
-    res.json({
-        success: true,
-        message: 'Authentication successful',
-        user: {
-            id: req.user._id,
-            name: req.user.name,
-            email: req.user.email,
-            role: req.user.role
-        }
-    });
-});
-
-// Send test notification
-router.post('/test', protect, restrictTo('admin'), async (req, res) => {
+// Send test notification (no auth required)
+router.post('/test', async (req, res) => {
     try {
         const { title, body, icon } = req.body;
         
@@ -58,10 +44,10 @@ router.post('/test', protect, restrictTo('admin'), async (req, res) => {
     }
 });
 
-// Save subscription (admin only)
-router.post('/subscribe', protect, restrictTo('admin'), saveSubscription);
+// Save subscription (no auth required)
+router.post('/subscribe', saveSubscription);
 
-// Delete subscription (admin only)
-router.delete('/unsubscribe', protect, restrictTo('admin'), deleteSubscription);
+// Delete subscription (no auth required)
+router.delete('/unsubscribe', deleteSubscription);
 
 module.exports = router; 
