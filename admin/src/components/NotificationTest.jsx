@@ -63,14 +63,34 @@ const NotificationTest = () => {
                 console.log('Subscription successful');
             }
             
-            // Test 6: Send test notification
-            console.log('6. Sending test notification...');
+            // Test 6: Debug authentication first
+            console.log('6. Testing authentication...');
             const token = localStorage.getItem('adminToken');
             if (!token) {
                 toast.error('No authentication token found. Please log in again.');
                 return;
             }
             
+            // Test authentication endpoint first
+            const authResponse = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications/debug-auth`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (!authResponse.ok) {
+                const authError = await authResponse.json();
+                console.error('Authentication debug error:', authError);
+                toast.error(`Authentication failed: ${authError.message}`);
+                return;
+            }
+            
+            const authData = await authResponse.json();
+            console.log('Authentication successful:', authData);
+            
+            // Test 7: Send test notification
+            console.log('7. Sending test notification...');
             const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications/test`, {
                 method: 'POST',
                 headers: {

@@ -15,6 +15,20 @@ router.get('/test', (req, res) => {
     res.json({ message: 'Notification routes are working!' });
 });
 
+// Debug authentication endpoint
+router.get('/debug-auth', protect, (req, res) => {
+    res.json({
+        success: true,
+        message: 'Authentication successful',
+        user: {
+            id: req.user._id,
+            name: req.user.name,
+            email: req.user.email,
+            role: req.user.role
+        }
+    });
+});
+
 // Send test notification
 router.post('/test', protect, restrictTo('admin'), async (req, res) => {
     try {
