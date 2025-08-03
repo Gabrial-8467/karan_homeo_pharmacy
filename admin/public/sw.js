@@ -23,7 +23,9 @@ self.addEventListener('push', function(event) {
                     title: 'Close',
                     icon: '/favicon-96x96.png'
                 }
-            ]
+            ],
+            tag: 'new-order', // Prevents duplicate notifications
+            renotify: true
         };
 
         event.waitUntil(

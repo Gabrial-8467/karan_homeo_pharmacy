@@ -71,7 +71,7 @@ const NotificationSetup = () => {
                 <div className="flex items-center gap-2">
                     <FiAlertCircle className="text-yellow-600" />
                     <span className="text-yellow-800 text-sm">
-                        Push notifications are not supported in this browser
+                        Push notifications are not supported in this browser. Make sure you're using HTTPS and a modern browser.
                     </span>
                 </div>
             </div>

@@ -5,15 +5,20 @@ const {
     saveSubscription, 
     deleteSubscription 
 } = require('../controllers/notificationController');
-const { protect, admin } = require('../middlewares/auth');
+const { protect, restrictTo } = require('../middlewares/auth');
 
-// Get VAPID public key
+// Get VAPID public key (public endpoint)
 router.get('/vapid-public-key', getVapidPublicKey);
 
+// Test endpoint
+router.get('/test', (req, res) => {
+    res.json({ message: 'Notification routes are working!' });
+});
+
 // Save subscription (admin only)
-router.post('/subscribe', protect, admin, saveSubscription);
+router.post('/subscribe', protect, restrictTo('admin'), saveSubscription);
 
 // Delete subscription (admin only)
-router.delete('/unsubscribe', protect, admin, deleteSubscription);
+router.delete('/unsubscribe', protect, restrictTo('admin'), deleteSubscription);
 
 module.exports = router; 
