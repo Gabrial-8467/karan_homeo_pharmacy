@@ -60,5 +60,13 @@ productSchema.pre('save', function(next) {
     next();
 });
 
+// Create indexes for faster queries
+productSchema.index({ name: 1 });
+productSchema.index({ manufacturer: 1 });
+productSchema.index({ categories: 1 });
+productSchema.index({ price: 1 });
+productSchema.index({ createdAt: -1 });
+productSchema.index({ name: 'text', manufacturer: 'text', categories: 'text' });
+
 const Product = mongoose.model('Product', productSchema);
 module.exports = Product; 

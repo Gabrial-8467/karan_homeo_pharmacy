@@ -1,6 +1,5 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
-const { sendNotification } = require('./notificationController');
 
 // Admin Controllers
 exports.adminGetAllOrders = async (req, res) => {
@@ -131,18 +130,6 @@ exports.createOrder = async (req, res) => {
                 createdAt: createdOrder.createdAt
             });
         }
-        
-        // Send push notification to admin devices
-        await sendNotification({
-            title: 'New Order Received!',
-            body: `Order #${createdOrder._id} from ${req.user.name} - ₹${createdOrder.totalPrice}`,
-            icon: '/favicon-96x96.png',
-            badge: '/favicon-96x96.png',
-            data: {
-                orderId: createdOrder._id,
-                url: `/admin/orders`
-            }
-        });
         
         res.status(201).json({
             success: true,

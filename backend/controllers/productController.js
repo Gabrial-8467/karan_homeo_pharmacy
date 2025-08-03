@@ -108,13 +108,38 @@ exports.adminDeleteProduct = async (req, res) => {
 
 exports.adminGetAllProducts = async (req, res) => {
     try {
-        const products = await Product.find()
-            .populate('createdBy', 'name')
-            .sort('-createdAt');
+        const { page = 1, limit = 50, search, sort = '-createdAt' } = req.query;
+        
+        // Build query
+        const query = {};
+        if (search) {
+            query.$or = [
+                { name: { $regex: search, $options: 'i' } },
+                { manufacturer: { $regex: search, $options: 'i' } },
+                { categories: { $in: [new RegExp(search, 'i')] } }
+            ];
+        }
+
+        // Calculate pagination
+        const skip = (page - 1) * limit;
+        
+        // Execute query with pagination and lean() for better performance
+        const products = await Product.find(query)
+            .select('name price image manufacturer categories usage createdAt')
+            .sort(sort)
+            .skip(skip)
+            .limit(parseInt(limit))
+            .lean();
+
+        // Get total count for pagination
+        const total = await Product.countDocuments(query);
 
         res.json({
             success: true,
             count: products.length,
+            total,
+            page: parseInt(page),
+            totalPages: Math.ceil(total / limit),
             data: products
         });
     } catch (error) {
@@ -128,13 +153,17 @@ exports.adminGetAllProducts = async (req, res) => {
 // Public Controllers
 exports.getProducts = async (req, res) => {
     try {
-        const { search, minPrice, maxPrice, minRating, sort } = req.query;
+        const { search, minPrice, maxPrice, minRating, sort, page = 1, limit = 20 } = req.query;
         
         // Build query
         const query = {};
         
         if (search) {
-            query.name = { $regex: search, $options: 'i' };
+            query.$or = [
+                { name: { $regex: search, $options: 'i' } },
+                { manufacturer: { $regex: search, $options: 'i' } },
+                { categories: { $in: [new RegExp(search, 'i')] } }
+            ];
         }
 
         if (minPrice || maxPrice) {
@@ -147,7 +176,13 @@ exports.getProducts = async (req, res) => {
             query.rating = { $gte: Number(minRating) };
         }
 
-        let products = Product.find(query);
+        // Calculate pagination
+        const skip = (page - 1) * limit;
+        
+        let products = Product.find(query)
+            .select('name price image manufacturer categories usage description')
+            .skip(skip)
+            .limit(parseInt(limit));
 
         // Apply sorting
         switch (sort) {
@@ -164,11 +199,15 @@ exports.getProducts = async (req, res) => {
                 products = products.sort('-createdAt');
         }
 
-        const result = await products.select('-reviews');
+        const result = await products.lean();
+        const total = await Product.countDocuments(query);
 
         res.json({
             success: true,
             count: result.length,
+            total,
+            page: parseInt(page),
+            totalPages: Math.ceil(total / limit),
             data: result
         });
     } catch (error) {

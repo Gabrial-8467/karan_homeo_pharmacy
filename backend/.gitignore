@@ -44,9 +44,6 @@ jspm_packages/
 # dotenv environment variables file
 .env
 
-# VAPID keys (contains private key)
-config/vapid-keys.json
-
 # Uploads directory
 uploads/
 

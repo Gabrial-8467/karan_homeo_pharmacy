@@ -1,9 +1,12 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { FiEdit, FiTrash2, FiPlus, FiSave, FiX, FiUpload } from 'react-icons/fi';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const api = axios.create({ baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api` });
+const api = axios.create({ 
+    baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`,
+    timeout: 10000 // 10 second timeout
+});
 
 // Helper to get correct image URL
 const getImageUrl = (imagePath) => {
@@ -12,7 +15,35 @@ const getImageUrl = (imagePath) => {
     return `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${imagePath}`;
 };
 
-// Remove socket.io and stock update logic
+// Skeleton loader component
+const ProductSkeleton = () => (
+    <tr className="animate-pulse">
+        <td className="px-2 sm:px-6 py-2 sm:py-4">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded"></div>
+        </td>
+        <td className="px-2 sm:px-6 py-2 sm:py-4">
+            <div className="h-4 bg-gray-200 rounded w-24"></div>
+        </td>
+        <td className="px-2 sm:px-6 py-2 sm:py-4">
+            <div className="h-4 bg-gray-200 rounded w-16"></div>
+        </td>
+        <td className="px-2 sm:px-6 py-2 sm:py-4">
+            <div className="h-4 bg-gray-200 rounded w-20"></div>
+        </td>
+        <td className="px-2 sm:px-6 py-2 sm:py-4">
+            <div className="h-4 bg-gray-200 rounded w-32"></div>
+        </td>
+        <td className="px-2 sm:px-6 py-2 sm:py-4">
+            <div className="h-4 bg-gray-200 rounded w-28"></div>
+        </td>
+        <td className="px-2 sm:px-6 py-2 sm:py-4">
+            <div className="flex gap-2 justify-center">
+                <div className="w-8 h-8 bg-gray-200 rounded"></div>
+                <div className="w-8 h-8 bg-gray-200 rounded"></div>
+            </div>
+        </td>
+    </tr>
+);
 
 const Products = () => {
     const [products, setProducts] = useState([]);
@@ -31,27 +62,53 @@ const Products = () => {
         categories: '',
     });
     const [addLoading, setAddLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTimeout, setSearchTimeout] = useState(null);
     const fileInputRef = useRef();
 
-    // Fetch products
-    useEffect(() => {
-        fetchProducts();
-    }, []);
-
-    const fetchProducts = async () => {
+    // Memoized fetch function with pagination
+    const fetchProducts = useCallback(async (page = 1, search = '') => {
         setLoading(true);
         try {
-            const res = await api.get('/products');
+            const params = new URLSearchParams({
+                page: page.toString(),
+                limit: '50', // Load more products per page
+                ...(search && { search })
+            });
+            
+            const res = await api.get(`/products?${params}`);
             setProducts(res.data.data);
         } catch (err) {
             toast.error('Failed to fetch products');
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    // Edit product
-    const handleEditClick = (product) => {
+    // Fetch products on mount
+    useEffect(() => {
+        fetchProducts();
+    }, [fetchProducts]);
+
+    // Search functionality with debouncing
+    const handleSearch = useCallback((value) => {
+        setSearchTerm(value);
+        
+        // Clear existing timeout
+        if (searchTimeout) {
+            clearTimeout(searchTimeout);
+        }
+        
+        // Set new timeout for debounced search
+        const timeout = setTimeout(() => {
+            fetchProducts(1, value);
+        }, 300);
+        
+        setSearchTimeout(timeout);
+    }, [fetchProducts, searchTimeout]);
+
+    // Memoized handlers for better performance
+    const handleEditClick = useCallback((product) => {
         setEditingProduct(product);
         setEditForm({
             name: product.name,
@@ -63,13 +120,13 @@ const Products = () => {
             categories: Array.isArray(product.categories) ? product.categories.join(', ') : '',
         });
         setShowEditModal(true);
-    };
+    }, []);
 
-    const handleEditChange = (e) => {
-        setEditForm({ ...editForm, [e.target.name]: e.target.value });
-    };
+    const handleEditChange = useCallback((e) => {
+        setEditForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    }, []);
 
-    const handleEditSave = async () => {
+    const handleEditSave = useCallback(async () => {
         try {
             const updatedData = {
                 ...editForm,
@@ -83,10 +140,10 @@ const Products = () => {
         } catch (err) {
             toast.error('Failed to update product');
         }
-    };
+    }, [editForm, editingProduct, fetchProducts]);
 
     // Delete product
-    const handleDelete = async (id) => {
+    const handleDelete = useCallback(async (id) => {
         if (!window.confirm('Are you sure you want to delete this product?')) return;
         try {
             await api.delete(`/products/${id}`);
@@ -95,15 +152,15 @@ const Products = () => {
         } catch (err) {
             toast.error('Failed to delete product');
         }
-    };
+    }, [fetchProducts]);
 
     // Add product
-    const handleAddChange = (e) => {
-        setAddForm({ ...addForm, [e.target.name]: e.target.value });
-    };
+    const handleAddChange = useCallback((e) => {
+        setAddForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    }, []);
 
     // Image upload handler
-    const handleImageUpload = async (e) => {
+    const handleImageUpload = useCallback(async (e) => {
         const file = e.target.files[0];
         if (!file) return;
         const formData = new FormData();
@@ -117,9 +174,9 @@ const Products = () => {
         } catch (err) {
             toast.error('Image upload failed');
         }
-    };
+    }, []);
 
-    const handleAddProduct = async (e) => {
+    const handleAddProduct = useCallback(async (e) => {
         e.preventDefault();
         setAddLoading(true);
         try {
@@ -137,18 +194,88 @@ const Products = () => {
         } finally {
             setAddLoading(false);
         }
-    };
+    }, [addForm, fetchProducts]);
+
+    // Memoized product rows for better performance
+    const productRows = useMemo(() => {
+        if (loading) {
+            return Array.from({ length: 5 }, (_, index) => <ProductSkeleton key={index} />);
+        }
+        
+        if (products.length === 0) {
+            return (
+                <tr>
+                    <td colSpan={7} className="text-center py-6 text-gray-400">
+                        No products found.
+                    </td>
+                </tr>
+            );
+        }
+        
+        return products.map(product => (
+            <tr key={product._id} className="hover:bg-gray-50">
+                <td className="px-2 sm:px-6 py-2 sm:py-4">
+                    <img 
+                        src={getImageUrl(product.image)} 
+                        alt={product.name} 
+                        className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded bg-gray-100"
+                        loading="lazy"
+                    />
+                </td>
+                <td className="px-2 sm:px-6 py-2 sm:py-4 font-semibold text-gray-800">
+                    {product.name}
+                </td>
+                <td className="px-2 sm:px-6 py-2 sm:py-4">
+                    ₹{product.price}
+                </td>
+                <td className="px-2 sm:px-6 py-2 sm:py-4">
+                    {product.manufacturer || '-'}
+                </td>
+                <td className="px-2 sm:px-6 py-2 sm:py-4">
+                    {Array.isArray(product.categories) && product.categories.length > 0 
+                        ? product.categories.join(', ') 
+                        : '-'}
+                </td>
+                <td className="px-2 sm:px-6 py-2 sm:py-4">
+                    {product.usage || '-'}
+                </td>
+                <td className="px-2 sm:px-6 py-2 sm:py-4 text-center flex gap-2 justify-center">
+                    <button 
+                        onClick={() => handleEditClick(product)} 
+                        className="p-2 rounded bg-blue-100 hover:bg-blue-200 text-blue-700"
+                    >
+                        <FiEdit />
+                    </button>
+                    <button 
+                        onClick={() => handleDelete(product._id)} 
+                        className="p-2 rounded bg-red-100 hover:bg-red-200 text-red-700"
+                    >
+                        <FiTrash2 />
+                    </button>
+                </td>
+            </tr>
+        ));
+    }, [products, loading, handleEditClick, handleDelete]);
 
     return (
         <div className="p-2 sm:p-4">
             <div className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
                 <h1 className="text-xl sm:text-3xl font-bold text-gray-800">Product Management</h1>
-                <button
-                    onClick={() => setShowAddModal(true)}
-                    className="flex items-center gap-2 bg-blue-600 text-white px-4 sm:px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition shadow text-sm sm:text-base"
-                >
-                    <FiPlus /> Add Product
-                </button>
+                <div className="flex items-center gap-2">
+                    <input
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchTerm}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <button
+                        onClick={() => setShowAddModal(true)}
+                        className="flex items-center gap-2 bg-blue-600 text-white px-4 sm:px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition shadow text-sm sm:text-base"
+                    >
+                        <FiPlus /> Add Product
+                    </button>
+                </div>
             </div>
             <div className="overflow-x-auto bg-white rounded-xl shadow-lg">
                 <table className="min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
@@ -164,39 +291,7 @@ const Products = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {loading ? (
-                            <tr>
-                                <td colSpan={7} className="text-center py-8">
-                                    <div className="flex items-center justify-center">
-                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                                        <span className="ml-3 text-gray-600">Loading products...</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        ) : products.length === 0 ? (
-                            <tr><td colSpan={7} className="text-center py-6 text-gray-400">No products found.</td></tr>
-                        ) : (
-                            products.map(product => (
-                                <tr key={product._id} className="hover:bg-gray-50">
-                                    <td className="px-2 sm:px-6 py-2 sm:py-4">
-                                        <img src={getImageUrl(product.image)} alt={product.name} className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded bg-gray-100" />
-                                    </td>
-                                    <td className="px-2 sm:px-6 py-2 sm:py-4 font-semibold text-gray-800">{product.name}</td>
-                                    <td className="px-2 sm:px-6 py-2 sm:py-4">₹{product.price}</td>
-                                    <td className="px-2 sm:px-6 py-2 sm:py-4">{product.manufacturer || '-'}</td>
-                                    <td className="px-2 sm:px-6 py-2 sm:py-4">
-                                        {Array.isArray(product.categories) && product.categories.length > 0 
-                                            ? product.categories.join(', ') 
-                                            : '-'}
-                                    </td>
-                                    <td className="px-2 sm:px-6 py-2 sm:py-4">{product.usage || '-'}</td>
-                                    <td className="px-2 sm:px-6 py-2 sm:py-4 text-center flex gap-2 justify-center">
-                                        <button onClick={() => handleEditClick(product)} className="p-2 rounded bg-blue-100 hover:bg-blue-200 text-blue-700"><FiEdit /></button>
-                                        <button onClick={() => handleDelete(product._id)} className="p-2 rounded bg-red-100 hover:bg-red-200 text-red-700"><FiTrash2 /></button>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
+                        {productRows}
                     </tbody>
                 </table>
             </div>
