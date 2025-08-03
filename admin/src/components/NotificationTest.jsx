@@ -1,15 +1,23 @@
 import { useState } from 'react';
-import { FiPlay, FiInfo } from 'react-icons/fi';
+import { FiPlay, FiInfo, FiAlertCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import notificationService from '../services/notificationService';
+import { useAuth } from '../context/AuthContext';
 
 const NotificationTest = () => {
     const [isTesting, setIsTesting] = useState(false);
+    const { isAuthenticated } = useAuth();
 
     const testNotification = async () => {
         setIsTesting(true);
         try {
             console.log('=== Testing Notification System ===');
+            
+            // Check authentication first
+            if (!isAuthenticated) {
+                toast.error('Please log in to test notifications');
+                return;
+            }
             
             // Test 1: Check if service worker is supported
             console.log('1. Checking service worker support...');
@@ -57,11 +65,17 @@ const NotificationTest = () => {
             
             // Test 6: Send test notification
             console.log('6. Sending test notification...');
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                toast.error('No authentication token found. Please log in again.');
+                return;
+            }
+            
             const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications/test`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     title: 'Test Notification',
@@ -74,7 +88,12 @@ const NotificationTest = () => {
                 toast.success('Test notification sent! Check your browser notifications.');
             } else {
                 const error = await response.json();
-                toast.error(`Failed to send test notification: ${error.message}`);
+                console.error('Test notification error:', error);
+                if (response.status === 401) {
+                    toast.error('Authentication failed. Please log in again.');
+                } else {
+                    toast.error(`Failed to send test notification: ${error.message}`);
+                }
             }
             
         } catch (error) {
@@ -97,12 +116,18 @@ const NotificationTest = () => {
                         <p className="text-sm text-blue-700">
                             Test the notification system and check detailed logs in the browser console
                         </p>
+                        {!isAuthenticated && (
+                            <div className="flex items-center gap-1 mt-1">
+                                <FiAlertCircle className="text-red-500 text-xs" />
+                                <span className="text-xs text-red-600">Not authenticated</span>
+                            </div>
+                        )}
                     </div>
                 </div>
                 
                 <button
                     onClick={testNotification}
-                    disabled={isTesting}
+                    disabled={isTesting || !isAuthenticated}
                     className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 disabled:opacity-50"
                 >
                     <FiPlay />
