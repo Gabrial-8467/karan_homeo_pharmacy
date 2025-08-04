@@ -31,7 +31,7 @@ const Header = ({ toggleSidebar }) => {
             <button className="md:hidden text-2xl text-blue-700 mr-2" onClick={toggleSidebar}>
                 <FiMenu />
             </button>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 font-quicksand">{getPageTitle()}</h1>
+                            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 font-inter">{getPageTitle()}</h1>
         </header>
     );
 };
