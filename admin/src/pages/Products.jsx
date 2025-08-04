@@ -268,7 +268,7 @@ const Products = () => {
                          loading="lazy"
                      />
                  </td>
-                 <td className="px-2 sm:px-6 py-2 sm:py-4 font-semibold text-gray-800">
+                 <td className="px-2 sm:px-6 py-2 sm:py-4 text-gray-800">
                      {product.name}
                  </td>
                  <td className="px-2 sm:px-6 py-2 sm:py-4">
