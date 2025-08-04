@@ -10,6 +10,9 @@ const connectDB = require('./config/db');
 // Import error handler
 const { errorHandler } = require('./middlewares/error');
 
+// Import routes - adding back one by one
+const uploadRoutes = require('./routes/uploadRoutes');
+
 const app = express();
 
 // Connect to MongoDB
@@ -27,6 +30,9 @@ app.get('/', (req, res) => {
 app.get('/test', (req, res) => {
     res.json({ message: 'Server is working!' });
 });
+
+// Mount routes - adding back one by one
+app.use('/api/upload', uploadRoutes);
 
 // Error handling middleware
 app.use(errorHandler);
