@@ -11,16 +11,15 @@ const {
 
 // Public routes
 router.get('/', getProducts);
-router.get('/:id', getProduct);
 
-// Remove authentication middleware from admin/product routes
-// Change from:
-// router.post('/', protect, restrictTo('admin'), adminCreateProduct);
-// To:
-router.post('/', adminCreateProduct);
+// Admin routes (must come before /:id to avoid conflicts)
 router.get('/admin/all', adminGetAllProducts);
+router.post('/', adminCreateProduct);
 router.put('/:id', adminUpdateProduct);
 router.delete('/:id', adminDeleteProduct);
+
+// Product detail route (must come after admin routes)
+router.get('/:id', getProduct);
 
 // Protected routes (logged-in users)
 

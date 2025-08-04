@@ -78,7 +78,7 @@ const Products = () => {
                 ...(sort && { sort: `${sort}-${order}` })
             });
             
-            const res = await api.get(`/products?${params}`);
+            const res = await api.get(`/products/admin/all?${params}`);
             setProducts(res.data.data);
             setTotalPages(res.data.totalPages || 1);
             setTotalProducts(res.data.total || 0);
@@ -139,8 +139,8 @@ const Products = () => {
 
     // Pagination handlers
     const handlePageChange = useCallback((page) => {
-        fetchProducts(page, searchTerm);
-    }, [fetchProducts, searchTerm]);
+        fetchProducts(page, searchTerm, sortBy, sortOrder);
+    }, [fetchProducts, searchTerm, sortBy, sortOrder]);
 
     const handlePreviousPage = useCallback(() => {
         if (currentPage > 1) {
