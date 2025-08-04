@@ -58,6 +58,8 @@ const Products = () => {
         categories: '',
     });
     const [addLoading, setAddLoading] = useState(false);
+    const [errors, setErrors] = useState({});
+    const [touched, setTouched] = useState({});
     const [searchTerm, setSearchTerm] = useState('');
     const [searchTimeout, setSearchTimeout] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -200,10 +202,48 @@ const Products = () => {
         }
     }, [fetchProducts]);
 
+    // Validation function
+    const validateField = useCallback((name, value) => {
+        switch (name) {
+            case 'name':
+                if (!value.trim()) return 'Product name is required';
+                if (value.trim().length < 3) return 'Product name must be at least 3 characters';
+                if (value.trim().length > 100) return 'Product name must be less than 100 characters';
+                return '';
+            case 'price':
+                if (!value) return 'Price is required';
+                if (isNaN(value) || parseFloat(value) <= 0) return 'Price must be a positive number';
+                if (parseFloat(value) > 10000) return 'Price cannot exceed ₹10,000';
+                return '';
+            case 'manufacturer':
+                if (!value.trim()) return 'Manufacturer is required';
+                if (value.trim().length < 2) return 'Manufacturer must be at least 2 characters';
+                return '';
+            case 'categories':
+                if (!value.trim()) return 'At least one category is required';
+                const categories = value.split(',').map(c => c.trim()).filter(Boolean);
+                if (categories.length === 0) return 'At least one category is required';
+                if (categories.some(cat => cat.length < 2)) return 'Each category must be at least 2 characters';
+                return '';
+            case 'description':
+                if (value.trim().length > 500) return 'Description must be less than 500 characters';
+                return '';
+            default:
+                return '';
+        }
+    }, []);
+
     // Add product
     const handleAddChange = useCallback((e) => {
-        setAddForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    }, []);
+        const { name, value } = e.target;
+        setAddForm(prev => ({ ...prev, [name]: value }));
+        
+        // Validate field on change if it has been touched
+        if (touched[name]) {
+            const error = validateField(name, value);
+            setErrors(prev => ({ ...prev, [name]: error }));
+        }
+    }, [touched, validateField]);
 
     // Image upload handler
     const handleImageUpload = useCallback(async (e) => {
@@ -222,8 +262,41 @@ const Products = () => {
         }
     }, []);
 
+    // Handle field blur for validation
+    const handleFieldBlur = useCallback((name) => {
+        setTouched(prev => ({ ...prev, [name]: true }));
+        const error = validateField(name, addForm[name]);
+        setErrors(prev => ({ ...prev, [name]: error }));
+    }, [validateField, addForm]);
+
+    // Validate all fields
+    const validateForm = useCallback(() => {
+        const newErrors = {};
+        Object.keys(addForm).forEach(field => {
+            const error = validateField(field, addForm[field]);
+            if (error) newErrors[field] = error;
+        });
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    }, [addForm, validateField]);
+
     const handleAddProduct = useCallback(async (e) => {
         e.preventDefault();
+        
+        // Mark all fields as touched and validate
+        setTouched({
+            name: true,
+            price: true,
+            manufacturer: true,
+            categories: true,
+            description: true
+        });
+        
+        if (!validateForm()) {
+            toast.error('Please fix the errors before submitting');
+            return;
+        }
+        
         setAddLoading(true);
         try {
             await api.post('/products', {
@@ -231,16 +304,18 @@ const Products = () => {
                 price: Number(addForm.price),
                 categories: addForm.categories.split(',').map(c => c.trim()).filter(Boolean),
             });
-            toast.success('Product added!');
+            toast.success('Product added successfully!');
             setShowAddModal(false);
             setAddForm({ name: '', price: '', image: '', description: '', manufacturer: '', categories: '' });
+            setErrors({});
+            setTouched({});
             fetchProducts();
         } catch (err) {
             toast.error('Failed to add product');
         } finally {
             setAddLoading(false);
         }
-    }, [addForm, fetchProducts]);
+    }, [addForm, fetchProducts, validateForm]);
 
     // Memoized product rows for better performance
     const productRows = useMemo(() => {
@@ -410,39 +485,159 @@ const Products = () => {
                  </div>
              )}
 
-            {/* Add Modal */}
-            {showAddModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-                    <form onSubmit={handleAddProduct} className="bg-white rounded-xl shadow-xl p-4 sm:p-8 w-full max-w-md relative">
-                        <button type="button" onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500"><FiX size={24} /></button>
-                        <h2 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-6 font-Roboto Condensed">Add Product</h2>
-                        <div className="space-y-3 sm:space-y-4">
-                            <input name="name" value={addForm.name} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Medicine Name" required />
-                            <input name="price" value={addForm.price} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Price" type="number" required />
-                            <div className="flex items-center gap-2 sm:gap-4">
-                                <label className="flex items-center gap-2 cursor-pointer bg-blue-50 px-2 sm:px-3 py-2 rounded border border-blue-200 hover:bg-blue-100 text-xs sm:text-base">
-                                    <FiUpload />
-                                    <span>Upload Image</span>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        ref={fileInputRef}
-                                        onChange={handleImageUpload}
-                                    />
-                                </label>
-                                {addForm.image && (
-                                    <img src={getImageUrl(addForm.image)} alt="Preview" className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded bg-gray-100 border" />
-                                )}
-                            </div>
-                            <textarea name="description" value={addForm.description} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Description" rows={2} />
-                            <input name="manufacturer" value={addForm.manufacturer} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Manufacturer" />
-                            <input name="categories" value={addForm.categories} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Categories (comma separated)" />
-                        </div>
-                        <button type="submit" disabled={addLoading} className="mt-4 sm:mt-6 w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-blue-300 text-xs sm:text-base"><FiSave /> {addLoading ? 'Adding...' : 'Add Product'}</button>
-                    </form>
-                </div>
-            )}
+                         {/* Add Modal */}
+             {showAddModal && (
+                 <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                     <form onSubmit={handleAddProduct} className="bg-white rounded-xl shadow-xl p-4 sm:p-8 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
+                         <button type="button" onClick={() => {
+                             setShowAddModal(false);
+                             setErrors({});
+                             setTouched({});
+                         }} className="absolute top-4 right-4 text-gray-400 hover:text-red-500"><FiX size={24} /></button>
+                         <h2 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-6 font-Roboto Condensed">Add Product</h2>
+                         <div className="space-y-3 sm:space-y-4">
+                             {/* Product Name */}
+                             <div>
+                                 <label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
+                                 <input 
+                                     name="name" 
+                                     value={addForm.name} 
+                                     onChange={handleAddChange}
+                                     onBlur={() => handleFieldBlur('name')}
+                                     className={`w-full p-2 sm:p-3 border rounded text-xs sm:text-base transition-colors ${
+                                         touched.name && errors.name 
+                                             ? 'border-red-500 focus:border-red-500 focus:ring-red-200' 
+                                             : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
+                                     } focus:outline-none focus:ring-2`}
+                                     placeholder="Enter product name"
+                                 />
+                                 {touched.name && errors.name && (
+                                     <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                                 )}
+                             </div>
+
+                             {/* Price */}
+                             <div>
+                                 <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label>
+                                 <input 
+                                     name="price" 
+                                     value={addForm.price} 
+                                     onChange={handleAddChange}
+                                     onBlur={() => handleFieldBlur('price')}
+                                     type="number" 
+                                     step="0.01"
+                                     min="0"
+                                     className={`w-full p-2 sm:p-3 border rounded text-xs sm:text-base transition-colors ${
+                                         touched.price && errors.price 
+                                             ? 'border-red-500 focus:border-red-500 focus:ring-red-200' 
+                                             : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
+                                     } focus:outline-none focus:ring-2`}
+                                     placeholder="0.00"
+                                 />
+                                 {touched.price && errors.price && (
+                                     <p className="text-red-500 text-xs mt-1">{errors.price}</p>
+                                 )}
+                             </div>
+
+                             {/* Image Upload */}
+                             <div>
+                                 <label className="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
+                                 <div className="flex items-center gap-2 sm:gap-4">
+                                     <label className="flex items-center gap-2 cursor-pointer bg-blue-50 px-2 sm:px-3 py-2 rounded border border-blue-200 hover:bg-blue-100 text-xs sm:text-base transition-colors">
+                                         <FiUpload />
+                                         <span>Upload Image</span>
+                                         <input
+                                             type="file"
+                                             accept="image/*"
+                                             className="hidden"
+                                             ref={fileInputRef}
+                                             onChange={handleImageUpload}
+                                         />
+                                     </label>
+                                     {addForm.image && (
+                                         <img src={getImageUrl(addForm.image)} alt="Preview" className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded bg-gray-100 border" />
+                                     )}
+                                 </div>
+                             </div>
+
+                             {/* Manufacturer */}
+                             <div>
+                                 <label className="block text-sm font-medium text-gray-700 mb-1">Manufacturer *</label>
+                                 <input 
+                                     name="manufacturer" 
+                                     value={addForm.manufacturer} 
+                                     onChange={handleAddChange}
+                                     onBlur={() => handleFieldBlur('manufacturer')}
+                                     className={`w-full p-2 sm:p-3 border rounded text-xs sm:text-base transition-colors ${
+                                         touched.manufacturer && errors.manufacturer 
+                                             ? 'border-red-500 focus:border-red-500 focus:ring-red-200' 
+                                             : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
+                                     } focus:outline-none focus:ring-2`}
+                                     placeholder="Enter manufacturer name"
+                                 />
+                                 {touched.manufacturer && errors.manufacturer && (
+                                     <p className="text-red-500 text-xs mt-1">{errors.manufacturer}</p>
+                                 )}
+                             </div>
+
+                             {/* Categories */}
+                             <div>
+                                 <label className="block text-sm font-medium text-gray-700 mb-1">Categories *</label>
+                                 <input 
+                                     name="categories" 
+                                     value={addForm.categories} 
+                                     onChange={handleAddChange}
+                                     onBlur={() => handleFieldBlur('categories')}
+                                     className={`w-full p-2 sm:p-3 border rounded text-xs sm:text-base transition-colors ${
+                                         touched.categories && errors.categories 
+                                             ? 'border-red-500 focus:border-red-500 focus:ring-red-200' 
+                                             : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
+                                     } focus:outline-none focus:ring-2`}
+                                     placeholder="e.g., Fever, Pain, Cough (comma separated)"
+                                 />
+                                 {touched.categories && errors.categories && (
+                                     <p className="text-red-500 text-xs mt-1">{errors.categories}</p>
+                                 )}
+                                 <p className="text-gray-500 text-xs mt-1">Enter categories separated by commas</p>
+                             </div>
+
+                             {/* Description */}
+                             <div>
+                                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                 <textarea 
+                                     name="description" 
+                                     value={addForm.description} 
+                                     onChange={handleAddChange}
+                                     onBlur={() => handleFieldBlur('description')}
+                                     rows={3}
+                                     className={`w-full p-2 sm:p-3 border rounded text-xs sm:text-base transition-colors resize-none ${
+                                         touched.description && errors.description 
+                                             ? 'border-red-500 focus:border-red-500 focus:ring-red-200' 
+                                             : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
+                                     } focus:outline-none focus:ring-2`}
+                                     placeholder="Enter product description..."
+                                 />
+                                 {touched.description && errors.description && (
+                                     <p className="text-red-500 text-xs mt-1">{errors.description}</p>
+                                 )}
+                                 <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                     <span>Supports markdown formatting</span>
+                                     <span>{addForm.description.length}/500</span>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         {/* Submit Button */}
+                         <button 
+                             type="submit" 
+                             disabled={addLoading || Object.keys(errors).length > 0} 
+                             className="mt-4 sm:mt-6 w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-blue-300 disabled:cursor-not-allowed text-xs sm:text-base"
+                         >
+                             <FiSave /> {addLoading ? 'Adding...' : 'Add Product'}
+                         </button>
+                     </form>
+                 </div>
+             )}
 
             {/* Edit Modal */}
             {showEditModal && (
