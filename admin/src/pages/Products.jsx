@@ -65,21 +65,17 @@ const Products = () => {
     const [totalProducts, setTotalProducts] = useState(0);
     const [sortBy, setSortBy] = useState('name');
     const [sortOrder, setSortOrder] = useState('asc');
-    const [filterCategory, setFilterCategory] = useState('');
-    const [filterManufacturer, setFilterManufacturer] = useState('');
     const fileInputRef = useRef();
 
-    // Memoized fetch function with pagination and filters
-    const fetchProducts = useCallback(async (page = 1, search = '', sort = sortBy, order = sortOrder, category = filterCategory, manufacturer = filterManufacturer) => {
+    // Memoized fetch function with pagination and sorting
+    const fetchProducts = useCallback(async (page = 1, search = '', sort = sortBy, order = sortOrder) => {
         setLoading(true);
         try {
             const params = new URLSearchParams({
                 page: page.toString(),
                 limit: '10', // Show 10 products per page for better UX
                 ...(search && { search }),
-                ...(sort && { sort: `${sort}-${order}` }),
-                ...(category && { category }),
-                ...(manufacturer && { manufacturer })
+                ...(sort && { sort: `${sort}-${order}` })
             });
             
             const res = await api.get(`/products?${params}`);
@@ -92,7 +88,7 @@ const Products = () => {
         } finally {
             setLoading(false);
         }
-    }, [sortBy, sortOrder, filterCategory, filterManufacturer]);
+    }, [sortBy, sortOrder]);
 
     // Fetch products on mount
     useEffect(() => {
@@ -117,7 +113,7 @@ const Products = () => {
         setSearchTimeout(timeout);
     }, [fetchProducts, searchTimeout]);
 
-    // Filter and sort handlers
+    // Sort handlers
     const handleSortChange = useCallback((field) => {
         const newOrder = sortBy === field && sortOrder === 'asc' ? 'desc' : 'asc';
         setSortBy(field);
@@ -140,28 +136,6 @@ const Products = () => {
             ? <FiArrowUp className="w-4 h-4 text-blue-600" />
             : <FiArrowDown className="w-4 h-4 text-blue-600" />;
     }, [sortBy, sortOrder]);
-
-    const handleCategoryFilter = useCallback((category) => {
-        setFilterCategory(category);
-        setCurrentPage(1);
-        fetchProducts(1, searchTerm, sortBy, sortOrder, category);
-    }, [fetchProducts, searchTerm, sortBy, sortOrder]);
-
-    const handleManufacturerFilter = useCallback((manufacturer) => {
-        setFilterManufacturer(manufacturer);
-        setCurrentPage(1);
-        fetchProducts(1, searchTerm, sortBy, sortOrder, filterCategory, manufacturer);
-    }, [fetchProducts, searchTerm, sortBy, sortOrder, filterCategory]);
-
-    const handleClearFilters = useCallback(() => {
-        setSearchTerm('');
-        setSortBy('name');
-        setSortOrder('asc');
-        setFilterCategory('');
-        setFilterManufacturer('');
-        setCurrentPage(1);
-        fetchProducts(1, '', 'name', 'asc', '', '');
-    }, [fetchProducts]);
 
     // Pagination handlers
     const handlePageChange = useCallback((page) => {
@@ -344,80 +318,6 @@ const Products = () => {
                     >
                         <FiPlus /> Add Product
                     </button>
-                </div>
-            </div>
-
-            {/* Filters and Sorting */}
-            <div className="bg-white rounded-xl shadow-lg p-4 mb-6">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="flex flex-wrap items-center gap-3">
-                        {/* Sort Options */}
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-gray-700">Sort by:</span>
-                            <select
-                                value={`${sortBy}-${sortOrder}`}
-                                onChange={(e) => {
-                                    const [field, order] = e.target.value.split('-');
-                                    handleSortChange(field);
-                                }}
-                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            >
-                                <option value="name-asc">Name (A-Z)</option>
-                                <option value="name-desc">Name (Z-A)</option>
-                                <option value="price-asc">Price (Low to High)</option>
-                                <option value="price-desc">Price (High to Low)</option>
-                                <option value="createdAt-desc">Newest First</option>
-                                <option value="createdAt-asc">Oldest First</option>
-                            </select>
-                        </div>
-
-                        {/* Category Filter */}
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-gray-700">Category:</span>
-                            <select
-                                value={filterCategory}
-                                onChange={(e) => handleCategoryFilter(e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            >
-                                <option value="">All Categories</option>
-                                <option value="fever">Fever</option>
-                                <option value="cough">Cough</option>
-                                <option value="cold">Cold</option>
-                                <option value="headache">Headache</option>
-                                <option value="stomach">Stomach</option>
-                                <option value="vitamins">Vitamins</option>
-                                <option value="supplements">Supplements</option>
-                            </select>
-                        </div>
-
-                        {/* Manufacturer Filter */}
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-gray-700">Manufacturer:</span>
-                            <select
-                                value={filterManufacturer}
-                                onChange={(e) => handleManufacturerFilter(e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            >
-                                <option value="">All Manufacturers</option>
-                                <option value="Unknown Manufacturer">Unknown Manufacturer</option>
-                                <option value="Dr. Reckeweg">Dr. Reckeweg</option>
-                                <option value="SBL">SBL</option>
-                                <option value="Bakson">Bakson</option>
-                                <option value="Doliosis">Doliosis</option>
-                                <option value="Adel">Adel</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Clear Filters Button */}
-                    {(searchTerm || filterCategory || filterManufacturer || sortBy !== 'name' || sortOrder !== 'asc') && (
-                        <button
-                            onClick={handleClearFilters}
-                            className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition"
-                        >
-                            Clear Filters
-                        </button>
-                    )}
                 </div>
             </div>
             <div className="overflow-x-auto bg-white rounded-xl shadow-lg">

@@ -108,7 +108,7 @@ exports.adminDeleteProduct = async (req, res) => {
 
 exports.adminGetAllProducts = async (req, res) => {
     try {
-        const { page = 1, limit = 50, search, sort, category, manufacturer } = req.query;
+        const { page = 1, limit = 50, search, sort } = req.query;
         
         // Build query
         const query = {};
@@ -118,16 +118,6 @@ exports.adminGetAllProducts = async (req, res) => {
                 { manufacturer: { $regex: search, $options: 'i' } },
                 { categories: { $in: [new RegExp(search, 'i')] } }
             ];
-        }
-
-        // Add category filter
-        if (category) {
-            query.categories = { $in: [category] };
-        }
-
-        // Add manufacturer filter
-        if (manufacturer) {
-            query.manufacturer = manufacturer;
         }
 
         // Calculate pagination
