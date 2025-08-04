@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const { protect, restrictTo } = require('../middlewares/auth');
 const {
     getDashboardStats,
     getAllUsers,
@@ -9,10 +8,7 @@ const {
     deleteUser
 } = require('../controllers/adminController');
 
-// Protect all admin routes
-router.use(protect, restrictTo('admin'));
-
-// Dashboard routes
+// Public admin routes (no auth required)
 router.get('/dashboard', getDashboardStats);
 
 // User management routes

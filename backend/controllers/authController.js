@@ -100,13 +100,18 @@ exports.login = async (req, res) => {
 
 // @desc    Get current user profile
 // @route   GET /api/auth/profile
-// @access  Private
+// @access  Public
 exports.getProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id).select('-password');
+        // Since no authentication, return a default profile
         res.json({
             success: true,
-            data: user
+            data: {
+                _id: 'anonymous',
+                name: 'Anonymous User',
+                email: 'anonymous@example.com',
+                role: 'user'
+            }
         });
     } catch (error) {
         res.status(500).json({
@@ -118,37 +123,19 @@ exports.getProfile = async (req, res) => {
 
 // @desc    Update user profile
 // @route   PUT /api/auth/profile
-// @access  Private
+// @access  Public
 exports.updateProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id);
-
-        if (user) {
-            user.name = req.body.name || user.name;
-            user.email = req.body.email || user.email;
-            
-            if (req.body.password) {
-                user.password = req.body.password;
+        // Since no authentication, return success without updating
+        res.json({
+            success: true,
+            data: {
+                _id: 'anonymous',
+                name: req.body.name || 'Anonymous User',
+                email: req.body.email || 'anonymous@example.com',
+                role: 'user'
             }
-
-            const updatedUser = await user.save();
-
-            res.json({
-                success: true,
-                data: {
-                    _id: updatedUser._id,
-                    name: updatedUser.name,
-                    email: updatedUser.email,
-                    role: updatedUser.role,
-                    token: generateToken(updatedUser._id)
-                }
-            });
-        } else {
-            res.status(404).json({
-                success: false,
-                message: 'User not found'
-            });
-        }
+        });
     } catch (error) {
         res.status(500).json({
             success: false,

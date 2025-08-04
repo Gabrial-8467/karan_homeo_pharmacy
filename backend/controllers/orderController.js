@@ -112,7 +112,7 @@ exports.createOrder = async (req, res) => {
         } = req.body;
 
         const order = new Order({
-            user: req.user._id,
+            user: 'anonymous', // No user authentication
             orderItems,
             shippingAddress,
             paymentMethod
@@ -124,7 +124,7 @@ exports.createOrder = async (req, res) => {
         if (req.io) {
             req.io.to('admin').emit('new-order', {
                 orderId: createdOrder._id,
-                customerName: req.user.name,
+                customerName: shippingAddress.name || 'Anonymous',
                 totalPrice: createdOrder.totalPrice,
                 orderStatus: createdOrder.orderStatus,
                 createdAt: createdOrder.createdAt
@@ -145,9 +145,11 @@ exports.createOrder = async (req, res) => {
 
 exports.getMyOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ user: req.user._id })
+        // Since no authentication, return empty array or all orders
+        const orders = await Order.find()
             .populate('orderItems.product', 'name image price')
-            .sort('-createdAt');
+            .sort('-createdAt')
+            .limit(50); // Limit to prevent abuse
 
         res.json({
             success: true,
@@ -176,13 +178,7 @@ exports.getOrderById = async (req, res) => {
             });
         }
 
-        // Check if the order belongs to the logged-in user or user is admin
-        if (order.user._id.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-            return res.status(403).json({
-                success: false,
-                message: 'Not authorized to access this order'
-            });
-        }
+        // No authentication required - allow access to all orders
 
         res.json({
             success: true,
@@ -207,13 +203,7 @@ exports.updatePaymentStatus = async (req, res) => {
             });
         }
 
-        // Verify user ownership
-        if (order.user.toString() !== req.user._id.toString()) {
-            return res.status(403).json({
-                success: false,
-                message: 'Not authorized to update this order'
-            });
-        }
+        // No authentication required - allow updates to all orders
 
         order.isPaid = true;
         order.paidAt = Date.now();

@@ -184,13 +184,7 @@ exports.deleteUser = async (req, res) => {
             });
         }
 
-        // Prevent admin from deleting themselves
-        if (user._id.toString() === req.user._id.toString()) {
-            return res.status(400).json({
-                success: false,
-                message: 'Admin cannot delete their own account'
-            });
-        }
+        // No authentication required - allow all deletions
 
         await user.remove();
         res.json({
