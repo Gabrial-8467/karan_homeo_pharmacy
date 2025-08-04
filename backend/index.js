@@ -26,7 +26,6 @@ const io = new Server(server, {
     cors: {
         origin: [
             'https://karan-homeo-pharmacy.vercel.app',
-            'https://karan-homeo-pharmacy-18po.vercel.app',
             'https://khpadmin.vercel.app',
             'http://localhost:3000',
             'http://localhost:5173'
@@ -44,11 +43,18 @@ app.use(cors({
     'https://karan-homeo-pharmacy.vercel.app',
     'https://karan-homeo-pharmacy-18po.vercel.app',
     'https://khpadmin.vercel.app',
+    'https://karan-homeo-pharmacy-admin.vercel.app',
     'http://localhost:3000',
     'http://localhost:5173'
   ],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Handle preflight requests
+app.options('*', cors());
+
 app.use(express.json());
 
 // Make io available to routes
