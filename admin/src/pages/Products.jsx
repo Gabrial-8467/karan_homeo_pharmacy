@@ -331,6 +331,80 @@ const Products = () => {
                     </button>
                 </div>
             </div>
+
+            {/* Filters and Sorting */}
+            <div className="bg-white rounded-xl shadow-lg p-4 mb-6">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex flex-wrap items-center gap-3">
+                        {/* Sort Options */}
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-gray-700">Sort by:</span>
+                            <select
+                                value={`${sortBy}-${sortOrder}`}
+                                onChange={(e) => {
+                                    const [field, order] = e.target.value.split('-');
+                                    handleSortChange(field);
+                                }}
+                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value="name-asc">Name (A-Z)</option>
+                                <option value="name-desc">Name (Z-A)</option>
+                                <option value="price-asc">Price (Low to High)</option>
+                                <option value="price-desc">Price (High to Low)</option>
+                                <option value="createdAt-desc">Newest First</option>
+                                <option value="createdAt-asc">Oldest First</option>
+                            </select>
+                        </div>
+
+                        {/* Category Filter */}
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-gray-700">Category:</span>
+                            <select
+                                value={filterCategory}
+                                onChange={(e) => handleCategoryFilter(e.target.value)}
+                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value="">All Categories</option>
+                                <option value="fever">Fever</option>
+                                <option value="cough">Cough</option>
+                                <option value="cold">Cold</option>
+                                <option value="headache">Headache</option>
+                                <option value="stomach">Stomach</option>
+                                <option value="vitamins">Vitamins</option>
+                                <option value="supplements">Supplements</option>
+                            </select>
+                        </div>
+
+                        {/* Manufacturer Filter */}
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-gray-700">Manufacturer:</span>
+                            <select
+                                value={filterManufacturer}
+                                onChange={(e) => handleManufacturerFilter(e.target.value)}
+                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value="">All Manufacturers</option>
+                                <option value="Unknown Manufacturer">Unknown Manufacturer</option>
+                                <option value="Dr. Reckeweg">Dr. Reckeweg</option>
+                                <option value="SBL">SBL</option>
+                                <option value="Bakson">Bakson</option>
+                                <option value="Doliosis">Doliosis</option>
+                                <option value="Adel">Adel</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Clear Filters Button */}
+                    {(searchTerm || filterCategory || filterManufacturer || sortBy !== 'name' || sortOrder !== 'asc') && (
+                        <button
+                            onClick={handleClearFilters}
+                            className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition"
+                        >
+                            Clear Filters
+                        </button>
+                    )}
+                </div>
+            </div>
             <div className="overflow-x-auto bg-white rounded-xl shadow-lg">
                 <table className="min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
                     <thead className="bg-gray-50">
@@ -353,7 +427,7 @@ const Products = () => {
              {totalPages > 1 && (
                  <div className="flex items-center justify-between mt-6 bg-white rounded-xl shadow-lg p-4">
                      <div className="text-sm text-gray-700">
-                         Showing {((currentPage - 1) * 20) + 1} to {Math.min(currentPage * 20, totalProducts)} of {totalProducts} products
+                         Showing {((currentPage - 1) * 10) + 1} to {Math.min(currentPage * 10, totalProducts)} of {totalProducts} products
                      </div>
                      <div className="flex items-center gap-2">
                          <button

@@ -108,7 +108,7 @@ exports.adminDeleteProduct = async (req, res) => {
 
 exports.adminGetAllProducts = async (req, res) => {
     try {
-        const { page = 1, limit = 50, search, sort = '-createdAt' } = req.query;
+        const { page = 1, limit = 50, search, sort, category, manufacturer } = req.query;
         
         // Build query
         const query = {};
@@ -120,13 +120,30 @@ exports.adminGetAllProducts = async (req, res) => {
             ];
         }
 
+        // Add category filter
+        if (category) {
+            query.categories = { $in: [category] };
+        }
+
+        // Add manufacturer filter
+        if (manufacturer) {
+            query.manufacturer = manufacturer;
+        }
+
         // Calculate pagination
         const skip = (page - 1) * limit;
+        
+        // Build sort object
+        let sortObj = { createdAt: -1 }; // default sort
+        if (sort) {
+            const [field, order] = sort.split('-');
+            sortObj = { [field]: order === 'asc' ? 1 : -1 };
+        }
         
         // Execute query with pagination and lean() for better performance
         const products = await Product.find(query)
             .select('name price image manufacturer categories usage createdAt')
-            .sort(sort)
+            .sort(sortObj)
             .skip(skip)
             .limit(parseInt(limit))
             .lean();
