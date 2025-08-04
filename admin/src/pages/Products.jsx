@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
-import { FiEdit, FiTrash2, FiPlus, FiSave, FiX, FiUpload } from 'react-icons/fi';
+import { FiEdit, FiTrash2, FiPlus, FiSave, FiX, FiUpload, FiArrowUp, FiArrowDown } from 'react-icons/fi';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -125,6 +125,21 @@ const Products = () => {
         setCurrentPage(1);
         fetchProducts(1, searchTerm, field, newOrder);
     }, [sortBy, sortOrder, fetchProducts, searchTerm]);
+
+    // Table header sort handler
+    const handleTableSort = useCallback((field) => {
+        handleSortChange(field);
+    }, [handleSortChange]);
+
+    // Helper function to render sort icon
+    const renderSortIcon = useCallback((field) => {
+        if (sortBy !== field) {
+            return <FiArrowUp className="w-4 h-4 text-gray-400" />;
+        }
+        return sortOrder === 'asc' 
+            ? <FiArrowUp className="w-4 h-4 text-blue-600" />
+            : <FiArrowDown className="w-4 h-4 text-blue-600" />;
+    }, [sortBy, sortOrder]);
 
     const handleCategoryFilter = useCallback((category) => {
         setFilterCategory(category);
@@ -407,16 +422,32 @@ const Products = () => {
             </div>
             <div className="overflow-x-auto bg-white rounded-xl shadow-lg">
                 <table className="min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-                            <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categories</th>
-                            <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                            <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manufacturer</th>
-                            <th className="px-2 sm:px-6 py-2 sm:py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
+                                         <thead className="bg-gray-50">
+                         <tr>
+                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+                             <th 
+                                 className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                                 onClick={() => handleTableSort('name')}
+                             >
+                                 <div className="flex items-center gap-1">
+                                     <span>Name</span>
+                                     {renderSortIcon('name')}
+                                 </div>
+                             </th>
+                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categories</th>
+                             <th 
+                                 className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                                 onClick={() => handleTableSort('price')}
+                             >
+                                 <div className="flex items-center gap-1">
+                                     <span>Price</span>
+                                     {renderSortIcon('price')}
+                                 </div>
+                             </th>
+                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manufacturer</th>
+                             <th className="px-2 sm:px-6 py-2 sm:py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                         </tr>
+                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {productRows}
                                          </tbody>
