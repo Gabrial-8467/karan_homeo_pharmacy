@@ -292,7 +292,10 @@ const Products = () => {
             description: true
         });
         
-        if (!validateForm()) {
+        // Validate form after marking as touched
+        const isValid = validateForm();
+        
+        if (!isValid) {
             toast.error('Please fix the errors before submitting');
             return;
         }
@@ -491,6 +494,7 @@ const Products = () => {
                      <form onSubmit={handleAddProduct} className="bg-white rounded-xl shadow-xl p-4 sm:p-8 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
                          <button type="button" onClick={() => {
                              setShowAddModal(false);
+                             setAddForm({ name: '', price: '', image: '', description: '', manufacturer: '', categories: '' });
                              setErrors({});
                              setTouched({});
                          }} className="absolute top-4 right-4 text-gray-400 hover:text-red-500"><FiX size={24} /></button>
@@ -630,7 +634,7 @@ const Products = () => {
                          {/* Submit Button */}
                          <button 
                              type="submit" 
-                             disabled={addLoading || Object.keys(errors).length > 0} 
+                             disabled={addLoading || Object.values(errors).some(error => error !== '')} 
                              className="mt-4 sm:mt-6 w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-blue-300 disabled:cursor-not-allowed text-xs sm:text-base"
                          >
                              <FiSave /> {addLoading ? 'Adding...' : 'Add Product'}
