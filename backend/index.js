@@ -4,7 +4,16 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+// Import database connection
+const connectDB = require('./config/db');
+
+// Import error handler
+const { errorHandler } = require('./middlewares/error');
+
 const app = express();
+
+// Connect to MongoDB
+connectDB();
 
 // Basic middleware
 app.use(cors());
@@ -18,6 +27,9 @@ app.get('/', (req, res) => {
 app.get('/test', (req, res) => {
     res.json({ message: 'Server is working!' });
 });
+
+// Error handling middleware
+app.use(errorHandler);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
