@@ -14,6 +14,7 @@ const { errorHandler } = require('./middlewares/error');
 const uploadRoutes = require('./routes/uploadRoutes');
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.get('/test', (req, res) => {
 app.use('/api/upload', uploadRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Error handling middleware
 app.use(errorHandler);
