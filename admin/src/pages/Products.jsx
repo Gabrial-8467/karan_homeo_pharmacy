@@ -25,16 +25,13 @@ const ProductSkeleton = () => (
             <div className="h-4 bg-gray-200 rounded w-24"></div>
         </td>
         <td className="px-2 sm:px-6 py-2 sm:py-4">
+            <div className="h-4 bg-gray-200 rounded w-32"></div>
+        </td>
+        <td className="px-2 sm:px-6 py-2 sm:py-4">
             <div className="h-4 bg-gray-200 rounded w-16"></div>
         </td>
         <td className="px-2 sm:px-6 py-2 sm:py-4">
             <div className="h-4 bg-gray-200 rounded w-20"></div>
-        </td>
-        <td className="px-2 sm:px-6 py-2 sm:py-4">
-            <div className="h-4 bg-gray-200 rounded w-32"></div>
-        </td>
-        <td className="px-2 sm:px-6 py-2 sm:py-4">
-            <div className="h-4 bg-gray-200 rounded w-28"></div>
         </td>
         <td className="px-2 sm:px-6 py-2 sm:py-4">
             <div className="flex gap-2 justify-center">
@@ -58,32 +55,44 @@ const Products = () => {
         image: '',
         description: '',
         manufacturer: '',
-        usage: '',
         categories: '',
     });
     const [addLoading, setAddLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [searchTimeout, setSearchTimeout] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [sortBy, setSortBy] = useState('name');
+    const [sortOrder, setSortOrder] = useState('asc');
+    const [filterCategory, setFilterCategory] = useState('');
+    const [filterManufacturer, setFilterManufacturer] = useState('');
     const fileInputRef = useRef();
 
-    // Memoized fetch function with pagination
-    const fetchProducts = useCallback(async (page = 1, search = '') => {
+    // Memoized fetch function with pagination and filters
+    const fetchProducts = useCallback(async (page = 1, search = '', sort = sortBy, order = sortOrder, category = filterCategory, manufacturer = filterManufacturer) => {
         setLoading(true);
         try {
             const params = new URLSearchParams({
                 page: page.toString(),
-                limit: '50', // Load more products per page
-                ...(search && { search })
+                limit: '10', // Show 10 products per page for better UX
+                ...(search && { search }),
+                ...(sort && { sort: `${sort}-${order}` }),
+                ...(category && { category }),
+                ...(manufacturer && { manufacturer })
             });
             
             const res = await api.get(`/products?${params}`);
             setProducts(res.data.data);
+            setTotalPages(res.data.totalPages || 1);
+            setTotalProducts(res.data.total || 0);
+            setCurrentPage(page);
         } catch (err) {
             toast.error('Failed to fetch products');
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [sortBy, sortOrder, filterCategory, filterManufacturer]);
 
     // Fetch products on mount
     useEffect(() => {
@@ -101,11 +110,60 @@ const Products = () => {
         
         // Set new timeout for debounced search
         const timeout = setTimeout(() => {
+            setCurrentPage(1); // Reset to first page when searching
             fetchProducts(1, value);
         }, 300);
         
         setSearchTimeout(timeout);
     }, [fetchProducts, searchTimeout]);
+
+    // Filter and sort handlers
+    const handleSortChange = useCallback((field) => {
+        const newOrder = sortBy === field && sortOrder === 'asc' ? 'desc' : 'asc';
+        setSortBy(field);
+        setSortOrder(newOrder);
+        setCurrentPage(1);
+        fetchProducts(1, searchTerm, field, newOrder);
+    }, [sortBy, sortOrder, fetchProducts, searchTerm]);
+
+    const handleCategoryFilter = useCallback((category) => {
+        setFilterCategory(category);
+        setCurrentPage(1);
+        fetchProducts(1, searchTerm, sortBy, sortOrder, category);
+    }, [fetchProducts, searchTerm, sortBy, sortOrder]);
+
+    const handleManufacturerFilter = useCallback((manufacturer) => {
+        setFilterManufacturer(manufacturer);
+        setCurrentPage(1);
+        fetchProducts(1, searchTerm, sortBy, sortOrder, filterCategory, manufacturer);
+    }, [fetchProducts, searchTerm, sortBy, sortOrder, filterCategory]);
+
+    const handleClearFilters = useCallback(() => {
+        setSearchTerm('');
+        setSortBy('name');
+        setSortOrder('asc');
+        setFilterCategory('');
+        setFilterManufacturer('');
+        setCurrentPage(1);
+        fetchProducts(1, '', 'name', 'asc', '', '');
+    }, [fetchProducts]);
+
+    // Pagination handlers
+    const handlePageChange = useCallback((page) => {
+        fetchProducts(page, searchTerm);
+    }, [fetchProducts, searchTerm]);
+
+    const handlePreviousPage = useCallback(() => {
+        if (currentPage > 1) {
+            handlePageChange(currentPage - 1);
+        }
+    }, [currentPage, handlePageChange]);
+
+    const handleNextPage = useCallback(() => {
+        if (currentPage < totalPages) {
+            handlePageChange(currentPage + 1);
+        }
+    }, [currentPage, totalPages, handlePageChange]);
 
     // Memoized handlers for better performance
     const handleEditClick = useCallback((product) => {
@@ -116,7 +174,6 @@ const Products = () => {
             image: product.image,
             description: product.description || '',
             manufacturer: product.manufacturer || '',
-            usage: product.usage || '',
             categories: Array.isArray(product.categories) ? product.categories.join(', ') : '',
         });
         setShowEditModal(true);
@@ -187,7 +244,7 @@ const Products = () => {
             });
             toast.success('Product added!');
             setShowAddModal(false);
-            setAddForm({ name: '', price: '', image: '', description: '', manufacturer: '', usage: '', categories: '' });
+            setAddForm({ name: '', price: '', image: '', description: '', manufacturer: '', categories: '' });
             fetchProducts();
         } catch (err) {
             toast.error('Failed to add product');
@@ -202,65 +259,62 @@ const Products = () => {
             return Array.from({ length: 5 }, (_, index) => <ProductSkeleton key={index} />);
         }
         
-        if (products.length === 0) {
-            return (
-                <tr>
-                    <td colSpan={7} className="text-center py-6 text-gray-400">
-                        No products found.
-                    </td>
-                </tr>
-            );
-        }
+                 if (products.length === 0) {
+             return (
+                 <tr>
+                     <td colSpan={6} className="text-center py-6 text-gray-400">
+                         No products found.
+                     </td>
+                 </tr>
+             );
+         }
         
-        return products.map(product => (
-            <tr key={product._id} className="hover:bg-gray-50">
-                <td className="px-2 sm:px-6 py-2 sm:py-4">
-                    <img 
-                        src={getImageUrl(product.image)} 
-                        alt={product.name} 
-                        className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded bg-gray-100"
-                        loading="lazy"
-                    />
-                </td>
-                <td className="px-2 sm:px-6 py-2 sm:py-4 font-semibold text-gray-800">
-                    {product.name}
-                </td>
-                <td className="px-2 sm:px-6 py-2 sm:py-4">
-                    ₹{product.price}
-                </td>
-                <td className="px-2 sm:px-6 py-2 sm:py-4">
-                    {product.manufacturer || '-'}
-                </td>
-                <td className="px-2 sm:px-6 py-2 sm:py-4">
-                    {Array.isArray(product.categories) && product.categories.length > 0 
-                        ? product.categories.join(', ') 
-                        : '-'}
-                </td>
-                <td className="px-2 sm:px-6 py-2 sm:py-4">
-                    {product.usage || '-'}
-                </td>
-                <td className="px-2 sm:px-6 py-2 sm:py-4 text-center flex gap-2 justify-center">
-                    <button 
-                        onClick={() => handleEditClick(product)} 
-                        className="p-2 rounded bg-blue-100 hover:bg-blue-200 text-blue-700"
-                    >
-                        <FiEdit />
-                    </button>
-                    <button 
-                        onClick={() => handleDelete(product._id)} 
-                        className="p-2 rounded bg-red-100 hover:bg-red-200 text-red-700"
-                    >
-                        <FiTrash2 />
-                    </button>
-                </td>
-            </tr>
-        ));
+                 return products.map(product => (
+             <tr key={product._id} className="hover:bg-gray-50">
+                 <td className="px-2 sm:px-6 py-2 sm:py-4">
+                     <img 
+                         src={getImageUrl(product.image)} 
+                         alt={product.name} 
+                         className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded bg-gray-100"
+                         loading="lazy"
+                     />
+                 </td>
+                 <td className="px-2 sm:px-6 py-2 sm:py-4 font-semibold text-gray-800">
+                     {product.name}
+                 </td>
+                 <td className="px-2 sm:px-6 py-2 sm:py-4">
+                     {Array.isArray(product.categories) && product.categories.length > 0 
+                         ? product.categories.join(', ') 
+                         : '-'}
+                 </td>
+                 <td className="px-2 sm:px-6 py-2 sm:py-4">
+                     ₹{product.price}
+                 </td>
+                 <td className="px-2 sm:px-6 py-2 sm:py-4">
+                     {product.manufacturer || '-'}
+                 </td>
+                 <td className="px-2 sm:px-6 py-2 sm:py-4 text-center flex gap-2 justify-center">
+                     <button 
+                         onClick={() => handleEditClick(product)} 
+                         className="p-2 rounded bg-blue-100 hover:bg-blue-200 text-blue-700"
+                     >
+                         <FiEdit />
+                     </button>
+                     <button 
+                         onClick={() => handleDelete(product._id)} 
+                         className="p-2 rounded bg-red-100 hover:bg-red-200 text-red-700"
+                     >
+                         <FiTrash2 />
+                     </button>
+                 </td>
+             </tr>
+         ));
     }, [products, loading, handleEditClick, handleDelete]);
 
     return (
         <div className="p-2 sm:p-4">
             <div className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
-                <h1 className="text-xl sm:text-3xl font-bold text-gray-800">Product Management</h1>
+                <h1 className="text-xl sm:text-3xl font-bold text-gray-800 font-quicksand">Product Management</h1>
                 <div className="flex items-center gap-2">
                     <input
                         type="text"
@@ -291,16 +345,72 @@ const Products = () => {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {productRows}
-                    </tbody>
-                </table>
-            </div>
+                                         </tbody>
+                 </table>
+             </div>
+
+             {/* Pagination */}
+             {totalPages > 1 && (
+                 <div className="flex items-center justify-between mt-6 bg-white rounded-xl shadow-lg p-4">
+                     <div className="text-sm text-gray-700">
+                         Showing {((currentPage - 1) * 20) + 1} to {Math.min(currentPage * 20, totalProducts)} of {totalProducts} products
+                     </div>
+                     <div className="flex items-center gap-2">
+                         <button
+                             onClick={handlePreviousPage}
+                             disabled={currentPage === 1}
+                             className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                         >
+                             Previous
+                         </button>
+                         
+                         {/* Page numbers */}
+                         <div className="flex items-center gap-1">
+                             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                 let pageNum;
+                                 if (totalPages <= 5) {
+                                     pageNum = i + 1;
+                                 } else if (currentPage <= 3) {
+                                     pageNum = i + 1;
+                                 } else if (currentPage >= totalPages - 2) {
+                                     pageNum = totalPages - 4 + i;
+                                 } else {
+                                     pageNum = currentPage - 2 + i;
+                                 }
+                                 
+                                 return (
+                                     <button
+                                         key={pageNum}
+                                         onClick={() => handlePageChange(pageNum)}
+                                         className={`px-3 py-2 text-sm font-medium rounded-md ${
+                                             currentPage === pageNum
+                                                 ? 'bg-blue-600 text-white'
+                                                 : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
+                                         }`}
+                                     >
+                                         {pageNum}
+                                     </button>
+                                 );
+                             })}
+                         </div>
+                         
+                         <button
+                             onClick={handleNextPage}
+                             disabled={currentPage === totalPages}
+                             className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                         >
+                             Next
+                         </button>
+                     </div>
+                 </div>
+             )}
 
             {/* Add Modal */}
             {showAddModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
                     <form onSubmit={handleAddProduct} className="bg-white rounded-xl shadow-xl p-4 sm:p-8 w-full max-w-md relative">
                         <button type="button" onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500"><FiX size={24} /></button>
-                        <h2 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-6">Add Product</h2>
+                        <h2 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-6 font-quicksand">Add Product</h2>
                         <div className="space-y-3 sm:space-y-4">
                             <input name="name" value={addForm.name} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Medicine Name" required />
                             <input name="price" value={addForm.price} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Price" type="number" required />
@@ -322,7 +432,6 @@ const Products = () => {
                             </div>
                             <textarea name="description" value={addForm.description} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Description" rows={2} />
                             <input name="manufacturer" value={addForm.manufacturer} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Manufacturer" />
-                            <textarea name="usage" value={addForm.usage} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="How to take this medicine" rows={2} />
                             <input name="categories" value={addForm.categories} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Categories (comma separated)" />
                         </div>
                         <button type="submit" disabled={addLoading} className="mt-4 sm:mt-6 w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-blue-300 text-xs sm:text-base"><FiSave /> {addLoading ? 'Adding...' : 'Add Product'}</button>
@@ -335,7 +444,7 @@ const Products = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
                     <div className="bg-white rounded-xl shadow-xl p-4 sm:p-8 w-full max-w-md relative">
                         <button onClick={() => setShowEditModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500"><FiX size={24} /></button>
-                        <h2 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-6">Edit Product</h2>
+                        <h2 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-6 font-quicksand">Edit Product</h2>
                         <div className="space-y-3 sm:space-y-4">
                             <input name="name" value={editForm.name} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Name" />
                             <input name="price" value={editForm.price} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Price" type="number" />
@@ -343,7 +452,6 @@ const Products = () => {
                             <input name="image" value={editForm.image} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Image URL" />
                             <textarea name="description" value={editForm.description} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Description" rows={2} />
                             <input name="manufacturer" value={editForm.manufacturer} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Manufacturer" />
-                            <textarea name="usage" value={editForm.usage} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="How to take this medicine" rows={2} />
                         </div>
                         <button onClick={handleEditSave} className="mt-4 sm:mt-6 w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition text-xs sm:text-base"><FiSave /> Save Changes</button>
                     </div>
