@@ -303,7 +303,7 @@ const Products = () => {
     return (
         <div className="p-2 sm:p-4">
             <div className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
-                <h1 className="text-xl sm:text-3xl font-bold text-gray-800 font-inter">Product Management</h1>
+                <h1 className="text-xl sm:text-3xl font-bold text-gray-800 font-Roboto Condensed">Product Management</h1>
                 <div className="flex items-center gap-2">
                     <input
                         type="text"
@@ -415,7 +415,7 @@ const Products = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
                     <form onSubmit={handleAddProduct} className="bg-white rounded-xl shadow-xl p-4 sm:p-8 w-full max-w-md relative">
                         <button type="button" onClick={() => setShowAddModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500"><FiX size={24} /></button>
-                        <h2 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-6 font-inter">Add Product</h2>
+                        <h2 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-6 font-Roboto Condensed">Add Product</h2>
                         <div className="space-y-3 sm:space-y-4">
                             <input name="name" value={addForm.name} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Medicine Name" required />
                             <input name="price" value={addForm.price} onChange={handleAddChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Price" type="number" required />
@@ -449,7 +449,7 @@ const Products = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
                     <div className="bg-white rounded-xl shadow-xl p-4 sm:p-8 w-full max-w-md relative">
                         <button onClick={() => setShowEditModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500"><FiX size={24} /></button>
-                        <h2 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-6 font-inter">Edit Product</h2>
+                        <h2 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-6 font-Roboto Condensed">Edit Product</h2>
                         <div className="space-y-3 sm:space-y-4">
                             <input name="name" value={editForm.name} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Name" />
                             <input name="price" value={editForm.price} onChange={handleEditChange} className="w-full p-2 sm:p-3 border rounded text-xs sm:text-base" placeholder="Price" type="number" />
