@@ -73,21 +73,21 @@ const Dashboard = () => {
         <div className="p-2 sm:p-4">
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-10">
-                <div className="flex items-center gap-3 sm:gap-4 bg-blue-50 p-4 sm:p-6 rounded-xl shadow">
+                <div className="flex items-center gap-3 sm:gap-4 bg-blue-50 p-4 sm:p-6 rounded-xl shadow-lg">
                     <FiPackage className="text-blue-600 text-2xl sm:text-3xl" />
                     <div>
                         <div className="text-lg sm:text-2xl font-bold">{totalProducts}</div>
                         <div className="text-gray-600 text-xs sm:text-base">Products</div>
                     </div>
                 </div>
-                <div className="flex items-center gap-3 sm:gap-4 bg-green-50 p-4 sm:p-6 rounded-xl shadow">
+                <div className="flex items-center gap-3 sm:gap-4 bg-green-50 p-4 sm:p-6 rounded-xl shadow-lg">
                     <FiShoppingCart className="text-green-600 text-2xl sm:text-3xl" />
                     <div>
                         <div className="text-lg sm:text-2xl font-bold">{totalOrders}</div>
                         <div className="text-gray-600 text-xs sm:text-base">Orders</div>
                     </div>
                 </div>
-                <div className="flex items-center gap-3 sm:gap-4 bg-yellow-50 p-4 sm:p-6 rounded-xl shadow">
+                <div className="flex items-center gap-3 sm:gap-4 bg-yellow-50 p-4 sm:p-6 rounded-xl shadow-lg">
                     <FiDollarSign className="text-yellow-600 text-2xl sm:text-3xl" />
                     <div>
                         <div className="text-lg sm:text-2xl font-bold">₹{totalRevenue.toFixed(2)}</div>
