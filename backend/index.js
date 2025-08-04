@@ -13,6 +13,7 @@ const { errorHandler } = require('./middlewares/error');
 // Import routes - adding back one by one
 const uploadRoutes = require('./routes/uploadRoutes');
 const authRoutes = require('./routes/authRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.get('/test', (req, res) => {
 // Mount routes - adding back one by one
 app.use('/api/upload', uploadRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Error handling middleware
 app.use(errorHandler);
