@@ -41,6 +41,7 @@ connectDB();
 app.use(cors({
   origin: [
     'https://karan-homeo-pharmacy.vercel.app',
+    'https://karan-homeo-pharmacy-18po.vercel.app',
     'https://khpadmin.vercel.app',
     'https://karan-homeo-pharmacy-admin.vercel.app',
     'http://localhost:3000',
@@ -50,9 +51,6 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
-// Handle preflight requests
-app.options('*', cors());
 
 app.use(express.json());
 
