@@ -1,53 +1,32 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+// middleware/authMiddleware.js
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
-exports.protect = async (req, res, next) => {
+export const protect = async (req, res, next) => {
+  let token;
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
     try {
-        // 1. Check if token exists
-        let token;
-        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-            token = req.headers.authorization.split(' ')[1];
-        }
+      token = req.headers.authorization.split(" ")[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        if (!token) {
-            return res.status(401).json({
-                success: false,
-                message: 'Not authorized to access this route'
-            });
-        }
+      req.user = await User.findById(decoded.id).select("-password");
 
-        // 2. Verify token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      if (!req.user) {
+        return res.status(401).json({ message: "User not found" });
+      }
 
-        // 3. Check if user still exists
-        const user = await User.findById(decoded.id);
-        if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: 'User no longer exists'
-            });
-        }
-
-        // 4. Add user to request object
-        req.user = user;
-        next();
+      next();
     } catch (error) {
-        return res.status(401).json({
-            success: false,
-            message: 'Not authorized to access this route'
-        });
+      console.error("Auth Middleware Error:", error);
+      return res.status(401).json({ message: "Not authorized, token failed" });
     }
-};
+  }
 
-// Middleware to restrict access to admin only
-exports.restrictTo = (...roles) => {
-    return (req, res, next) => {
-        if (!roles.includes(req.user.role)) {
-            return res.status(403).json({
-                success: false,
-                message: 'You do not have permission to perform this action'
-            });
-        }
-        next();
-    };
-}; 
+  if (!token) {
+    return res.status(401).json({ message: "Not authorized, no token" });
+  }
+};
