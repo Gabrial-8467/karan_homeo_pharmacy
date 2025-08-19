@@ -12,7 +12,7 @@ const connectDB = require('./config/db');
 // Import error handler
 const { errorHandler } = require('./middlewares/error');
 
-// Import routes - adding back one by one
+// Import routes (make sure each of these files exports a router)
 const uploadRoutes = require('./routes/uploadRoutes');
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -54,6 +54,12 @@ app.use(cors({
 
 app.use(express.json());
 
+// Make io available to routes (must come BEFORE routes)
+app.use((req, res, next) => {
+    req.io = io;
+    next();
+});
+
 // Test routes
 app.get('/', (req, res) => {
     res.send('<h1>Karan Homeo Pharmacy API</h1><p>Server is up and running!</p>');
@@ -63,7 +69,7 @@ app.get('/test', (req, res) => {
     res.json({ message: 'Server is working!' });
 });
 
-// Mount routes - adding back one by one
+// Mount routes (make sure each route file does: `module.exports = router;`)
 app.use('/api/upload', uploadRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
@@ -74,7 +80,6 @@ app.use('/api/products', productRoutes);
 io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);
     
-    // Join admin room
     socket.on('join-admin', () => {
         socket.join('admin');
         console.log('Admin joined room');
@@ -85,17 +90,11 @@ io.on('connection', (socket) => {
     });
 });
 
-// Make io available to routes
-app.use((req, res, next) => {
-    req.io = io;
-    next();
-});
-
-// Error handling middleware
+// Error handling middleware (always last)
 app.use(errorHandler);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
-}); 
+});
