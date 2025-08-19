@@ -1,3 +1,4 @@
+// src/context/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
@@ -7,28 +8,32 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(() => {
+        // ✅ Load user from localStorage on first render
+        const storedUser = localStorage.getItem('user');
+        return storedUser ? JSON.parse(storedUser) : null;
+    });
     const [loading, setLoading] = useState(true);
 
-    // ✅ Check if user is logged in on mount
+    // ✅ Verify token with backend when app loads
     useEffect(() => {
-        const checkUserLoggedIn = async () => {
+        const verifyUser = async () => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
                     const response = await api.get('/auth/profile');
                     setUser(response.data.data);
+                    localStorage.setItem('user', JSON.stringify(response.data.data));
                 } catch (error) {
                     console.error('Failed to fetch user profile:', error);
                     localStorage.removeItem('token');
-                    setUser(null);  // 🚫 Don’t fallback to anonymous
+                    localStorage.removeItem('user');
+                    setUser(null);
                 }
-            } else {
-                setUser(null); // explicitly clear
             }
             setLoading(false);
         };
-        checkUserLoggedIn();
+        verifyUser();
     }, []);
 
     const login = async (email, password) => {
@@ -36,6 +41,7 @@ export const AuthProvider = ({ children }) => {
             const response = await api.post('/auth/login', { email, password });
             const { token, ...userData } = response.data.data;
             localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(userData));
             setUser(userData);
             toast.success('Logged in successfully!');
             return true;
@@ -52,6 +58,7 @@ export const AuthProvider = ({ children }) => {
             const response = await api.post('/auth/register', { name, email, password });
             const { token, ...userData } = response.data.data;
             localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(userData));
             setUser(userData);
             toast.success('Registered successfully!');
             return true;
@@ -67,14 +74,14 @@ export const AuthProvider = ({ children }) => {
         try {
             const response = await api.put('/auth/profile', updateData);
             const { token, ...updatedUser } = response.data.data;
-            
-            setUser(updatedUser);
 
-            // ✅ Save new token if backend re-issues
+            setUser(updatedUser);
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+
             if (token) {
                 localStorage.setItem('token', token);
             }
-            
+
             toast.success('Profile updated successfully!');
             return true;
         } catch (error) {
@@ -87,10 +94,11 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('token');
-        setUser(null);  // ✅ Clear state completely
+        localStorage.removeItem('user');
+        setUser(null);
         toast.success('You have been logged out.');
     };
-    
+
     const auth = {
         user,
         loading,
