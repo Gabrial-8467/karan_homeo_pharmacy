@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const User = require('../models/User');
 
 // Admin Controllers
 exports.adminGetAllOrders = async (req, res) => {
@@ -15,10 +16,7 @@ exports.adminGetAllOrders = async (req, res) => {
             data: orders
         });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
@@ -27,16 +25,11 @@ exports.adminUpdateOrderStatus = async (req, res) => {
         const order = await Order.findById(req.params.id);
 
         if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: 'Order not found'
-            });
+            return res.status(404).json({ success: false, message: 'Order not found' });
         }
 
-        // Update order status
         order.orderStatus = req.body.status;
 
-        // If delivered, update delivery status and time
         if (req.body.status === 'Delivered') {
             order.isDelivered = true;
             order.deliveredAt = Date.now();
@@ -44,15 +37,9 @@ exports.adminUpdateOrderStatus = async (req, res) => {
 
         await order.save();
 
-        res.json({
-            success: true,
-            data: order
-        });
+        res.json({ success: true, data: order });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
@@ -62,7 +49,7 @@ exports.adminGetOrderStats = async (req, res) => {
         const processingOrders = await Order.countDocuments({ orderStatus: 'Processing' });
         const deliveredOrders = await Order.countDocuments({ orderStatus: 'Delivered' });
         const cancelledOrders = await Order.countDocuments({ orderStatus: 'Cancelled' });
-        
+
         const totalRevenue = await Order.aggregate([
             { $match: { orderStatus: 'Delivered' } },
             { $group: { _id: null, total: { $sum: '$totalPrice' } } }
@@ -79,10 +66,7 @@ exports.adminGetOrderStats = async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
@@ -95,7 +79,6 @@ exports.adminDeleteOrder = async (req, res) => {
         }
 
         await order.deleteOne();
-
         res.json({ success: true, message: 'Order deleted successfully' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -105,62 +88,45 @@ exports.adminDeleteOrder = async (req, res) => {
 // Customer Controllers
 exports.createOrder = async (req, res) => {
     try {
-        const {
-            orderItems,
-            shippingAddress,
-            paymentMethod
-        } = req.body;
+        const { orderItems, shippingAddress, paymentMethod } = req.body;
 
+        // ✅ Use logged in user from req.user (set by auth middleware)
         const order = new Order({
-            user: 'anonymous', // No user authentication
+            user: req.user._id,
             orderItems,
             shippingAddress,
-            paymentMethod
+            paymentMethod,
+            totalPrice: orderItems.reduce((acc, item) => acc + item.qty * item.price, 0)
         });
 
         const createdOrder = await order.save();
-        
-        // Emit real-time notification to admin
+
         if (req.io) {
             req.io.to('admin').emit('new-order', {
                 orderId: createdOrder._id,
-                customerName: shippingAddress.name || 'Anonymous',
+                customerName: req.user.name,
                 totalPrice: createdOrder.totalPrice,
                 orderStatus: createdOrder.orderStatus,
                 createdAt: createdOrder.createdAt
             });
         }
-        
-        res.status(201).json({
-            success: true,
-            data: createdOrder
-        });
+
+        res.status(201).json({ success: true, data: createdOrder });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message
-        });
+        res.status(400).json({ success: false, message: error.message });
     }
 };
 
 exports.getMyOrders = async (req, res) => {
     try {
-        // Since no authentication, return empty array or all orders
-        const orders = await Order.find()
+        // ✅ Fetch orders for logged-in user only
+        const orders = await Order.find({ user: req.user._id })
             .populate('orderItems.product', 'name image price')
-            .sort('-createdAt')
-            .limit(50); // Limit to prevent abuse
+            .sort('-createdAt');
 
-        res.json({
-            success: true,
-            count: orders.length,
-            data: orders
-        });
+        res.json({ success: true, count: orders.length, data: orders });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
@@ -170,25 +136,18 @@ exports.getOrderById = async (req, res) => {
             .populate('user', 'name email')
             .populate('orderItems.product', 'name image price');
 
-        // Check if order exists
         if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: 'Order not found'
-            });
+            return res.status(404).json({ success: false, message: 'Order not found' });
         }
 
-        // No authentication required - allow access to all orders
+        // ✅ Only allow owner or admin
+        if (order.user._id.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Not authorized' });
+        }
 
-        res.json({
-            success: true,
-            data: order
-        });
+        res.json({ success: true, data: order });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
@@ -197,13 +156,12 @@ exports.updatePaymentStatus = async (req, res) => {
         const order = await Order.findById(req.params.id);
 
         if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: 'Order not found'
-            });
+            return res.status(404).json({ success: false, message: 'Order not found' });
         }
 
-        // No authentication required - allow updates to all orders
+        if (order.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Not authorized' });
+        }
 
         order.isPaid = true;
         order.paidAt = Date.now();
@@ -216,14 +174,8 @@ exports.updatePaymentStatus = async (req, res) => {
 
         const updatedOrder = await order.save();
 
-        res.json({
-            success: true,
-            data: updatedOrder
-        });
+        res.json({ success: true, data: updatedOrder });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message
-        });
+        res.status(400).json({ success: false, message: error.message });
     }
-}; 
+};
