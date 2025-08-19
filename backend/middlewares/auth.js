@@ -1,7 +1,8 @@
-// middleware/authMiddleware.js
+// backend/middleware/authMiddleware.js
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
+// Middleware to protect routes (only logged-in users can access)
 export const protect = async (req, res, next) => {
   let token;
 
@@ -13,15 +14,16 @@ export const protect = async (req, res, next) => {
       token = req.headers.authorization.split(" ")[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+      // Attach user to req (without password)
       req.user = await User.findById(decoded.id).select("-password");
 
       if (!req.user) {
         return res.status(401).json({ message: "User not found" });
       }
 
-      next();
+      return next();
     } catch (error) {
-      console.error("Auth Middleware Error:", error);
+      console.error("Auth Middleware Error:", error.message);
       return res.status(401).json({ message: "Not authorized, token failed" });
     }
   }
@@ -29,4 +31,17 @@ export const protect = async (req, res, next) => {
   if (!token) {
     return res.status(401).json({ message: "Not authorized, no token" });
   }
+};
+
+// Middleware to restrict access by role (e.g., admin only)
+export const restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: "You do not have permission to perform this action",
+      });
+    }
+    next();
+  };
 };
