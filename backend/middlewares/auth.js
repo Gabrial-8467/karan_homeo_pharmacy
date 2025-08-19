@@ -1,47 +1,53 @@
-// backend/middleware/authMiddleware.js
-import jwt from "jsonwebtoken";
-import User from "../models/User.js";
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
-// Middleware to protect routes (only logged-in users can access)
-export const protect = async (req, res, next) => {
-  let token;
-
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
+exports.protect = async (req, res, next) => {
     try {
-      token = req.headers.authorization.split(" ")[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        // 1. Check if token exists
+        let token;
+        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+            token = req.headers.authorization.split(' ')[1];
+        }
 
-      // Attach user to req (without password)
-      req.user = await User.findById(decoded.id).select("-password");
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: 'Not authorized to access this route'
+            });
+        }
 
-      if (!req.user) {
-        return res.status(401).json({ message: "User not found" });
-      }
+        // 2. Verify token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      return next();
+        // 3. Check if user still exists
+        const user = await User.findById(decoded.id);
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'User no longer exists'
+            });
+        }
+
+        // 4. Add user to request object
+        req.user = user;
+        next();
     } catch (error) {
-      console.error("Auth Middleware Error:", error.message);
-      return res.status(401).json({ message: "Not authorized, token failed" });
+        return res.status(401).json({
+            success: false,
+            message: 'Not authorized to access this route'
+        });
     }
-  }
-
-  if (!token) {
-    return res.status(401).json({ message: "Not authorized, no token" });
-  }
 };
 
-// Middleware to restrict access by role (e.g., admin only)
-export const restrictTo = (...roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({
-        success: false,
-        message: "You do not have permission to perform this action",
-      });
-    }
-    next();
-  };
-};
+// Middleware to restrict access to admin only
+exports.restrictTo = (...roles) => {
+    return (req, res, next) => {
+        if (!roles.includes(req.user.role)) {
+            return res.status(403).json({
+                success: false,
+                message: 'You do not have permission to perform this action'
+            });
+        }
+        next();
+    };
+}; 
