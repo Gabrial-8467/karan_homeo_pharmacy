@@ -101,15 +101,6 @@ const Profile = () => {
           <h2 className="text-lg sm:text-2xl font-bold text-center">{user?.name}</h2>
           <p className="text-blue-200 text-center text-xs sm:text-base">{user?.email}</p>
           <div className="mt-2 flex flex-col items-center gap-1">
-            <span className="text-xs sm:text-sm text-blue-100">
-              Member since{' '}
-              {user?.createdAt
-                ? new Date(user.createdAt).toLocaleDateString('en-US', {
-                    month: 'long',
-                    year: 'numeric',
-                  })
-                : ''}
-            </span>
           </div>
         </div>
 
