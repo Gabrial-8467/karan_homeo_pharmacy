@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // ✅ Check if user is logged in on mount
     useEffect(() => {
         const checkUserLoggedIn = async () => {
             const token = localStorage.getItem('token');
@@ -20,8 +21,10 @@ export const AuthProvider = ({ children }) => {
                 } catch (error) {
                     console.error('Failed to fetch user profile:', error);
                     localStorage.removeItem('token');
-                    setUser(null);
+                    setUser(null);  // 🚫 Don’t fallback to anonymous
                 }
+            } else {
+                setUser(null); // explicitly clear
             }
             setLoading(false);
         };
@@ -65,10 +68,9 @@ export const AuthProvider = ({ children }) => {
             const response = await api.put('/auth/profile', updateData);
             const { token, ...updatedUser } = response.data.data;
             
-            // Update user state
             setUser(updatedUser);
 
-            // If a new token is issued (e.g., if email was changed and affects token), update it
+            // ✅ Save new token if backend re-issues
             if (token) {
                 localStorage.setItem('token', token);
             }
@@ -85,7 +87,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('token');
-        setUser(null);
+        setUser(null);  // ✅ Clear state completely
         toast.success('You have been logged out.');
     };
     
@@ -103,4 +105,4 @@ export const AuthProvider = ({ children }) => {
             {!loading && children}
         </AuthContext.Provider>
     );
-}; 
+};
