@@ -1,7 +1,7 @@
 // routes/authRoutes.js
-import express from "express";
-import { protect } from "../middleware/authMiddleware.js";
-import User from "../models/User.js";
+const express = require("express");
+const { protect } = require("../middleware/authMiddleware.js");
+const User = require("../models/User.js");
 
 const router = express.Router();
 
