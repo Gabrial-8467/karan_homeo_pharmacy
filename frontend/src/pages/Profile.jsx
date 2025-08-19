@@ -104,7 +104,7 @@ const Profile = () => {
             <span className="text-xs sm:text-sm text-blue-100">
               Member since{' '}
               {user?.createdAt
-                ? new Date(user.createdAt).toLocaleDateString('en-US', {
+                ? new Date(user?.createdAt).toLocaleDateString('en-US', {
                     month: 'long',
                     year: 'numeric',
                   })
