@@ -137,9 +137,9 @@ exports.updateProfile = async (req, res) => {
         res.json({
             success: true,
             data: {
-                _id: 'anonymous',
-                name: name || 'Anonymous User',
-                email: email || 'anonymous@example.com',
+                _id: req.user.id,
+                name: name,
+                email: email,
                 role: 'user'
             }
         });
