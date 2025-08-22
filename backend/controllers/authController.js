@@ -5,7 +5,7 @@ const User = require('../models/User');
 // Generate JWT token
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRE || '2d'
+        expiresIn: process.env.JWT_EXPIRE
     });
 };
 
@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        // Check if user exists
+        // 1. Check if user exists
         let user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({
@@ -25,11 +25,11 @@ exports.register = async (req, res) => {
             });
         }
 
-        // Hash password
+        // 2. Hash password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Create user
+        // 3. Create user
         user = await User.create({
             name,
             email,
@@ -37,6 +37,7 @@ exports.register = async (req, res) => {
             role: 'user'
         });
 
+        // 4. Generate token
         const token = generateToken(user._id);
 
         res.status(201).json({
@@ -64,7 +65,7 @@ exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Find user
+        // 1. Find user
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({
@@ -73,7 +74,7 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Check password
+        // 2. Check password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({
@@ -82,6 +83,7 @@ exports.login = async (req, res) => {
             });
         }
 
+        // 3. Generate token
         const token = generateToken(user._id);
 
         res.json({
@@ -107,7 +109,9 @@ exports.login = async (req, res) => {
 // @access  Private
 exports.getProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select('-password');
+        // ⚡ FIX: `req.user` is set in middleware (req.user = user), 
+        // so you should use req.user._id not req.user.id
+        const user = await User.findById(req.user._id).select('-password');
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -132,15 +136,35 @@ exports.getProfile = async (req, res) => {
 // @access  Private
 exports.updateProfile = async (req, res) => {
     try {
-        const { name, email } = req.body || {};
+        const { name, email, password } = req.body;
+
+        // Get user from DB
+        let user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Update fields
+        if (name) user.name = name;
+        if (email) user.email = email;
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(password, salt);
+        }
+
+        await user.save();
 
         res.json({
             success: true,
             data: {
-                _id: req.user.id,
-                name: name,
-                email: email,
-                role: 'user'
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                token: generateToken(user._id) // issue fresh token
             }
         });
     } catch (error) {
