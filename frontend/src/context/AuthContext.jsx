@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const response = await api.get('/auth/profile',{
+                    const response = await api.get('/auth/profile', {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
@@ -24,11 +24,18 @@ export const AuthProvider = ({ children }) => {
                     setUser(response.data.data);
                 } catch (error) {
                     console.error('Failed to fetch user profile:', error);
-                    localStorage.removeItem('token');
-                    setUser(null);  // 🚫 Don’t fallback to anonymous
+
+                    // 🚀 Only logout if truly unauthorized
+                    if (error.response && error.response.status === 401) {
+                        localStorage.removeItem('token');
+                        setUser(null);
+                        toast.error("Session expired. Please log in again.");
+                    } else {
+                        toast.error("Server error. Please try again later.");
+                    }
                 }
             } else {
-                setUser(null); // explicitly clear
+                setUser(null);
             }
             setLoading(false);
         };
