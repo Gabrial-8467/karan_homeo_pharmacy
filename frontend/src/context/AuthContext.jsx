@@ -16,7 +16,11 @@ export const AuthProvider = ({ children }) => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const response = await api.get('/auth/profile');
+                    const response = await api.get('/auth/profile',{
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
                     setUser(response.data.data);
                 } catch (error) {
                     console.error('Failed to fetch user profile:', error);
