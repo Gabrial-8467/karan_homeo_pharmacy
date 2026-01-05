@@ -213,7 +213,7 @@ const Checkout = () => {
                             </label> */}
                         </div>
 
-                         { /* {formData.paymentMethod === 'Razorpay' ? (
+                         {formData.paymentMethod === 'Razorpay' ? (
                             <button type="button" disabled={isLoading || cart.length === 0} onClick={handleRazorpayPayment} className="w-full mt-6 sm:mt-8 bg-green-600 text-white py-2.5 sm:py-3 rounded-md font-semibold text-base sm:text-lg hover:bg-green-700 disabled:bg-green-300">
                                 {isLoading ? 'Processing Payment...' : 'Pay with Razorpay'}
                             </button>
@@ -221,7 +221,7 @@ const Checkout = () => {
                             <button type="submit" disabled={isLoading || cart.length === 0} className="w-full mt-6 sm:mt-8 bg-blue-600 text-white py-2.5 sm:py-3 rounded-md font-semibold text-base sm:text-lg hover:bg-blue-700 disabled:bg-blue-300">
                                 {isLoading ? 'Placing Order...' : 'Place Order'}
                             </button>
-                        )} */}
+                        )} 
                     </form>
                 </div>
 
@@ -259,4 +259,5 @@ const Checkout = () => {
 
 
 export default Checkout; 
+
 
