@@ -200,20 +200,20 @@ const Checkout = () => {
                             {errors.postalCode && <p className="text-red-500 text-xs">{errors.postalCode}</p>}
                              {errors.phone && <p className="text-red-500 text-xs">{errors.phone}</p>}
                         </div>
-                        
+                        {/* PAYMENT METHOD */}
                         <h3 className="text-lg sm:text-xl font-semibold mt-6 sm:mt-8 mb-2 sm:mb-4">Payment Method</h3>
                         <div className="space-y-2 sm:space-y-4">
                             <label className="flex items-center p-3 sm:p-4 border border-gray-300 rounded-md cursor-pointer">
                                 <input type="radio" name="paymentMethod" value="COD" checked={formData.paymentMethod === 'COD'} onChange={handleChange} className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
                                 <span className="ml-3 text-gray-700 text-sm sm:text-base">Cash on Delivery (COD)</span>
                             </label>
-                            <label className="flex items-center p-3 sm:p-4 border border-gray-300 rounded-md cursor-pointer">
+                            {/* <label className="flex items-center p-3 sm:p-4 border border-gray-300 rounded-md cursor-pointer">
                                 <input type="radio" name="paymentMethod" value="Razorpay" checked={formData.paymentMethod === 'Razorpay'} onChange={handleChange} className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
-                                <span className="ml-3 text-gray-700 text-sm sm:text-base">Online Payment (Razorpay)</span>
-                            </label>
+                                <span className="ml-3 text-gray-700 text-sm sm:text-base">PAY VIA RAZORPAY</span>
+                            </label> */}
                         </div>
 
-                        {formData.paymentMethod === 'Razorpay' ? (
+                        /* {formData.paymentMethod === 'Razorpay' ? (
                             <button type="button" disabled={isLoading || cart.length === 0} onClick={handleRazorpayPayment} className="w-full mt-6 sm:mt-8 bg-green-600 text-white py-2.5 sm:py-3 rounded-md font-semibold text-base sm:text-lg hover:bg-green-700 disabled:bg-green-300">
                                 {isLoading ? 'Processing Payment...' : 'Pay with Razorpay'}
                             </button>
@@ -221,7 +221,7 @@ const Checkout = () => {
                             <button type="submit" disabled={isLoading || cart.length === 0} className="w-full mt-6 sm:mt-8 bg-blue-600 text-white py-2.5 sm:py-3 rounded-md font-semibold text-base sm:text-lg hover:bg-blue-700 disabled:bg-blue-300">
                                 {isLoading ? 'Placing Order...' : 'Place Order'}
                             </button>
-                        )}
+                        )} */
                     </form>
                 </div>
 
@@ -256,5 +256,6 @@ const Checkout = () => {
         </div>
     );
 };
+
 
 export default Checkout; 
