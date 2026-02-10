@@ -57,8 +57,8 @@ const Checkout = () => {
         setIsLoading(true);
 
         const orderData = {
-            orderItems: cart.map(item => ({
-                product: item._id,
+            orderItems: cart.filter(item => item._id).map(item => ({
+                product: { _id: item._id }, productId: item._id, productId: item._id, productId: item._id,
                 name: item.name,
                 image: item.image,
                 price: item.price,
@@ -142,8 +142,8 @@ const Checkout = () => {
     const handleSubmitRazorpay = async (razorpayResponse) => {
         // Place order with payment method as Razorpay
         const orderData = {
-            orderItems: cart.map(item => ({
-                product: item._id,
+            orderItems: cart.filter(item => item._id).map(item => ({
+                product: { _id: item._id }, productId: item._id, productId: item._id, productId: item._id,
                 name: item.name,
                 image: item.image,
                 price: item.price,
