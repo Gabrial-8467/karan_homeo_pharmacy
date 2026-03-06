@@ -6,7 +6,6 @@ const PerformanceMonitor = () => {
     const fcpObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
       entries.forEach((entry) => {
-        console.log('FCP:', entry.startTime, 'ms');
         // You can send this to your analytics service
       });
     });
@@ -16,7 +15,6 @@ const PerformanceMonitor = () => {
     const lcpObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
       const lastEntry = entries[entries.length - 1];
-      console.log('LCP:', lastEntry.startTime, 'ms');
       // You can send this to your analytics service
     });
     lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
@@ -25,7 +23,6 @@ const PerformanceMonitor = () => {
     const fidObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
       entries.forEach((entry) => {
-        console.log('FID:', entry.processingStart - entry.startTime, 'ms');
         // You can send this to your analytics service
       });
     });

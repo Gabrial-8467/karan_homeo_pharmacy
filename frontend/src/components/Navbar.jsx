@@ -17,7 +17,6 @@ const Navbar = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        console.log('Logout button clicked');
         logout();
         setDropdownOpen(false);
         setMobileMenuOpen(false);
@@ -40,7 +39,6 @@ const Navbar = () => {
     }, []);
 
     const handleLinkClick = () => {
-        console.log('Menu link clicked');
         setDropdownOpen(false);
         setMobileMenuOpen(false);
     };

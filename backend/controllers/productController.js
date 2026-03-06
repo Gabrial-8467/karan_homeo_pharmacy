@@ -6,7 +6,7 @@ const cloudinary = require('../config/cloudinary');
 // Update all products missing manufacturer on server start
 Product.updateMany({ manufacturer: { $exists: false } }, { $set: { manufacturer: 'Unknown Manufacturer' } }).then(res => {
   if (res.modifiedCount > 0) {
-    console.log(`Updated ${res.modifiedCount} products with default manufacturer.`);
+    //console.log(`Updated ${res.modifiedCount} products with default manufacturer.`);
   }
 });
 
@@ -74,7 +74,7 @@ exports.adminDeleteProduct = async (req, res) => {
             const imagePath = path.join(__dirname, '..', product.image);
             fs.unlink(imagePath, (err) => {
                 if (err && err.code !== 'ENOENT') {
-                    console.error('Failed to delete product image:', err);
+                    //console.error('Failed to delete product image:', err);
                 }
             });
         }
@@ -88,7 +88,7 @@ exports.adminDeleteProduct = async (req, res) => {
                 try {
                     await cloudinary.uploader.destroy(publicId);
                 } catch (err) {
-                    console.error('Failed to delete image from Cloudinary:', err);
+                    //console.error('Failed to delete image from Cloudinary:', err);
                 }
             }
         }

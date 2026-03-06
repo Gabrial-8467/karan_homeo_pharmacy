@@ -14,7 +14,6 @@ const OrderHistory = () => {
                 const response = await api.get('/orders/myorders');
                 setOrders(response.data.data);
             } catch (error) {
-                console.error('Failed to fetch order history:', error);
                 toast.error('Could not load your order history.');
             } finally {
                 setLoading(false);

@@ -38,6 +38,6 @@ export default defineConfig({
   },
   // Performance optimizations
   esbuild: {
-    drop: ['console', 'debugger'], // Remove console logs in production
+    drop: ['//console', 'debugger'], // Remove //console logs in production
   }
 })

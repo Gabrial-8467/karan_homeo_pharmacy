@@ -55,7 +55,7 @@ exports.register = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("🔥 Register error:", error);
+        //console.error("🔥 Register error:", error);
         return res.status(500).json({
             success: false,
             message: error.message || "Server error in register"
@@ -111,7 +111,7 @@ exports.login = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("🔥 Login error:", error);
+        //console.error("🔥 Login error:", error);
         return res.status(500).json({
             success: false,
             message: "Server error during login. Check backend logs."
@@ -137,7 +137,7 @@ exports.getProfile = async (req, res) => {
             data: user
         });
     } catch (error) {
-        console.error("🔥 GetProfile error:", error);
+        //console.error("🔥 GetProfile error:", error);
         return res.status(500).json({
             success: false,
             message: error.message || 'Server error in getProfile'
@@ -182,7 +182,7 @@ exports.updateProfile = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("🔥 UpdateProfile error:", error);
+        //console.error("🔥 UpdateProfile error:", error);
         return res.status(500).json({
             success: false,
             message: error.message || 'Server error in updateProfile'

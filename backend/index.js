@@ -78,15 +78,15 @@ app.use('/api/products', productRoutes);
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
-    console.log('Client connected:', socket.id);
+    //console.log('Client connected:', socket.id);
     
     socket.on('join-admin', () => {
         socket.join('admin');
-        console.log('Admin joined room');
+        //console.log('Admin joined room');
     });
     
     socket.on('disconnect', () => {
-        console.log('Client disconnected:', socket.id);
+        //console.log('Client disconnected:', socket.id);
     });
 });
 
@@ -96,5 +96,5 @@ app.use(errorHandler);
 // Start Server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    //console.log(`Server is running on port ${PORT}`);
 });

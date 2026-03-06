@@ -31,7 +31,6 @@ export const StoreProvider = ({ children }) => {
             }
             return [];
         } catch (e) {
-            console.error("Failed to parse cart from localStorage", e);
             return []; // Return empty array on error
         }
     });
@@ -56,7 +55,6 @@ export const StoreProvider = ({ children }) => {
             const generatedCategories = Array.from(categorySet).map(name => ({ _id: name, name }));
             setCategories(generatedCategories);
         } catch (error) {
-            console.error('Failed to fetch products:', error);
             toast.error('Could not load products.');
         } finally {
             setLoading(false);

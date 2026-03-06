@@ -88,9 +88,6 @@ exports.adminDeleteOrder = async (req, res) => {
 // Customer Controllers
 exports.createOrder = async (req, res) => {
     try {
-        console.log('🔍 Create Order - req.user:', req.user);
-        console.log('🔍 Create Order - req.headers:', req.headers.authorization);
-        
         if (!req.user) {
             return res.status(401).json({ 
                 success: false, 
@@ -106,7 +103,7 @@ exports.createOrder = async (req, res) => {
             orderItems,
             shippingAddress,
             paymentMethod,
-            totalPrice: orderItems.reduce((acc, item) => acc + item.qty * item.price, 0)
+            totalPrice: orderItems.reduce((acc, item) => acc + item.quantity * item.price, 0)
         });
 
         const createdOrder = await order.save();

@@ -23,7 +23,6 @@ export const AuthProvider = ({ children }) => {
                     });
                     setUser(response.data.data);
                 } catch (error) {
-                    console.error('Failed to fetch user profile:', error);
 
                     // 🚀 Only logout if truly unauthorized
                     if (error.response && error.response.status === 401) {
@@ -51,7 +50,6 @@ export const AuthProvider = ({ children }) => {
             toast.success('Logged in successfully!');
             return true;
         } catch (error) {
-            console.error('Login failed:', error);
             const message = error.response?.data?.message || 'Login failed. Please try again.';
             toast.error(message);
             return false;
@@ -67,7 +65,6 @@ export const AuthProvider = ({ children }) => {
             toast.success('Registered successfully!');
             return true;
         } catch (error) {
-            console.error('Registration failed:', error);
             const message = error.response?.data?.message || 'Registration failed. Please try again.';
             toast.error(message);
             return false;
@@ -89,7 +86,6 @@ export const AuthProvider = ({ children }) => {
             toast.success('Profile updated successfully!');
             return true;
         } catch (error) {
-            console.error('Profile update failed:', error);
             const message = error.response?.data?.message || 'Profile update failed. Please try again.';
             toast.error(message);
             return false;
