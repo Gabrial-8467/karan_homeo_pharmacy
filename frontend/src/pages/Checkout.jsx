@@ -58,7 +58,7 @@ const Checkout = () => {
 
         const orderData = {
             orderItems: cart.filter(item => item._id).map(item => ({
-                product: { _id: item._id }, productId: item._id, productId: item._id, productId: item._id,
+                product: item._id,
                 name: item.name,
                 image: item.image,
                 price: item.price,
@@ -143,7 +143,7 @@ const Checkout = () => {
         // Place order with payment method as Razorpay
         const orderData = {
             orderItems: cart.filter(item => item._id).map(item => ({
-                product: { _id: item._id }, productId: item._id, productId: item._id, productId: item._id,
+                product: item._id,
                 name: item.name,
                 image: item.image,
                 price: item.price,
