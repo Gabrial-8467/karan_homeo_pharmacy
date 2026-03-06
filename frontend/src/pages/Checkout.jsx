@@ -76,7 +76,13 @@ const Checkout = () => {
         };
 
         try {
+            console.log('🔍 Checkout - User:', user);
+            console.log('🔍 Checkout - Token in localStorage:', localStorage.getItem('token'));
+            console.log('🔍 Checkout - Order data:', orderData);
+            
             const response = await api.post('/orders', orderData);
+            console.log('🔍 Checkout - Order response:', response.data);
+            
             clearCart();
             toast.success('Order placed successfully!');
             await fetchProducts(); // Refetch products to update stock

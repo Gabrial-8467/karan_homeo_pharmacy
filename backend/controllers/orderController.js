@@ -88,6 +88,16 @@ exports.adminDeleteOrder = async (req, res) => {
 // Customer Controllers
 exports.createOrder = async (req, res) => {
     try {
+        console.log('🔍 Create Order - req.user:', req.user);
+        console.log('🔍 Create Order - req.headers:', req.headers.authorization);
+        
+        if (!req.user) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'User not authenticated - req.user is undefined' 
+            });
+        }
+
         const { orderItems, shippingAddress, paymentMethod } = req.body;
 
         // ✅ Use logged in user from req.user (set by auth middleware)
