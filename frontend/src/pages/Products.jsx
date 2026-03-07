@@ -1,16 +1,42 @@
 import { useState } from 'react';
 import ProductCard from '../components/ProductCard';
 import { useStore } from '../context/storeContext';
-import { FiSearch } from 'react-icons/fi';
+import { FiSearch, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 const Products = () => {
     const { products } = useStore();
     const [search, setSearch] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const productsPerPage = 9;
 
     // Real-time search filter
     const filteredProducts = products.filter(product =>
         product.name.toLowerCase().includes(search.toLowerCase())
     );
+
+    // Pagination calculations
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+    const startIndex = (currentPage - 1) * productsPerPage;
+    const endIndex = startIndex + productsPerPage;
+    const currentProducts = filteredProducts.slice(startIndex, endIndex);
+
+    // Pagination controls
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            handlePageChange(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            handlePageChange(currentPage + 1);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 pb-12">
@@ -40,11 +66,44 @@ const Products = () => {
                     {filteredProducts.length === 0 ? (
                         <div className="col-span-full text-center text-gray-500 text-base sm:text-lg py-12 sm:py-16">No products found.</div>
                     ) : (
-                        filteredProducts.map((product) => (
+                        currentProducts.map((product) => (
                             <ProductCard key={product._id || product.id} product={product} />
                         ))
                     )}
                 </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="flex justify-center items-center gap-2 mt-8 mb-4">
+                        <button
+                            onClick={handlePrevPage}
+                            disabled={currentPage === 1}
+                            className={`p-2 rounded-lg ${currentPage === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-blue-600 hover:bg-blue-50 shadow'}`}
+                        >
+                            <FiChevronLeft />
+                        </button>
+
+                        <div className="flex gap-1">
+                            {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+                                <button
+                                    key={page}
+                                    onClick={() => handlePageChange(page)}
+                                    className={`px-3 py-1 rounded-lg ${currentPage === page ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50 shadow'}`}
+                                >
+                                    {page}
+                                </button>
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={handleNextPage}
+                            disabled={currentPage === totalPages}
+                            className={`p-2 rounded-lg ${currentPage === totalPages ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-blue-600 hover:bg-blue-50 shadow'}`}
+                        >
+                            <FiChevronRight />
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
