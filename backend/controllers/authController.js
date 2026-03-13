@@ -18,30 +18,31 @@ const generateToken = (id) => {
 // @access  Public
 exports.register = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { fullName, name, email, password, userType, studentType } = req.body;
+
+        // Handle both fullName (from Flutter) and name fields
+        const userName = fullName || name;
 
         // 1. Check if user exists
         let user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({
                 success: false,
-                message: 'User already exists'
+                error: 'User already exists'
             });
         }
 
-        // 2. Hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        // 3. Create user
+        // 2. Create user with all fields
         user = await User.create({
-            name,
+            name: userName,
             email,
-            password: hashedPassword,
+            password,
+            userType: userType || 'customer',
+            studentType: studentType || 'hostler',
             role: 'user'
         });
 
-        // 4. Generate token
+        // 3. Generate token
         const token = generateToken(user._id);
 
         return res.status(201).json({
@@ -51,14 +52,16 @@ exports.register = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                userType: user.userType,
+                studentType: user.studentType,
                 token
             }
         });
     } catch (error) {
-        //console.error("🔥 Register error:", error);
+        console.error("🔥 Register error:", error);
         return res.status(500).json({
             success: false,
-            message: error.message || "Server error in register"
+            error: error.message || "Server error in register"
         });
     }
 };
@@ -74,7 +77,7 @@ exports.login = async (req, res) => {
         if (!email || !password) {
             return res.status(400).json({
                 success: false,
-                message: "Email and password are required"
+                error: "Email and password are required"
             });
         }
 
@@ -83,7 +86,7 @@ exports.login = async (req, res) => {
         if (!user) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid credentials"
+                error: "Invalid credentials"
             });
         }
 
@@ -92,7 +95,7 @@ exports.login = async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid credentials"
+                error: "Invalid credentials"
             });
         }
 
@@ -106,15 +109,17 @@ exports.login = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                userType: user.userType,
+                studentType: user.studentType,
                 token
             }
         });
 
     } catch (error) {
-        //console.error("🔥 Login error:", error);
+        console.error("🔥 Login error:", error);
         return res.status(500).json({
             success: false,
-            message: "Server error during login. Check backend logs."
+            error: "Server error during login. Check backend logs."
         });
     }
 };
@@ -128,7 +133,7 @@ exports.getProfile = async (req, res) => {
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: 'User not found'
+                error: 'User not found'
             });
         }
 
@@ -137,10 +142,10 @@ exports.getProfile = async (req, res) => {
             data: user
         });
     } catch (error) {
-        //console.error("🔥 GetProfile error:", error);
+        console.error("🔥 GetProfile error:", error);
         return res.status(500).json({
             success: false,
-            message: error.message || 'Server error in getProfile'
+            error: error.message || 'Server error in getProfile'
         });
     }
 };
@@ -150,20 +155,22 @@ exports.getProfile = async (req, res) => {
 // @access  Private
 exports.updateProfile = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, userType, studentType } = req.body;
 
         // Get user from DB
         let user = await User.findById(req.user._id);
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: 'User not found'
+                error: 'User not found'
             });
         }
 
         // Update fields
         if (name) user.name = name;
         if (email) user.email = email;
+        if (userType) user.userType = userType;
+        if (studentType) user.studentType = studentType;
         if (password) {
             const salt = await bcrypt.genSalt(10);
             user.password = await bcrypt.hash(password, salt);
@@ -178,14 +185,16 @@ exports.updateProfile = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                userType: user.userType,
+                studentType: user.studentType,
                 token: generateToken(user._id) // issue fresh token
             }
         });
     } catch (error) {
-        //console.error("🔥 UpdateProfile error:", error);
+        console.error("🔥 UpdateProfile error:", error);
         return res.status(500).json({
             success: false,
-            message: error.message || 'Server error in updateProfile'
+            error: error.message || 'Server error in updateProfile'
         });
     }
 };

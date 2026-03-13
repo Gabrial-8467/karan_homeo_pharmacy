@@ -1,13 +1,11 @@
 const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const CloudinaryStorage = require('multer-storage-cloudinary');
 const cloudinary = require('./cloudinary');
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: 'karan-homeo-pharmacy', // Change as needed
-    allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'bmp','avif'],
-  },
+  folder: 'karan-homeo-pharmacy',
+  allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'bmp', 'avif'],
 });
 
 const fileFilter = (req, file, cb) => {

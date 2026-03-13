@@ -25,6 +25,16 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user'
     },
+    userType: {
+        type: String,
+        enum: ['customer', 'vendor'],
+        default: 'customer'
+    },
+    studentType: {
+        type: String,
+        enum: ['hostler', 'day_scholar'],
+        default: 'hostler'
+    },
     createdAt: {
         type: Date,
         default: Date.now

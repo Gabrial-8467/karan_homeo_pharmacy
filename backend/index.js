@@ -1,3 +1,7 @@
+// Force Node to use reliable DNS servers
+const { setServers } = require("node:dns/promises");
+
+setServers(["1.1.1.1", "8.8.8.8"]);
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -27,7 +31,6 @@ const io = new Server(server, {
         credentials: true
     }
 });
-
 // Connect to MongoDB
 connectDB();
 
@@ -82,6 +85,6 @@ app.use(errorHandler);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0",() => {
     console.log(`Server is running on port ${PORT}`);
 });
