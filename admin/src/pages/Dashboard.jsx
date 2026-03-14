@@ -30,9 +30,21 @@ const Dashboard = () => {
                 api.get('/products'),
                 api.get('/orders/admin/all'),
             ]);
-            console.log('Data fetched successfully:', { products: prodRes.data.data, orders: orderRes.data.data });
-            setProducts(prodRes.data.data);
-            setOrders(orderRes.data.data);
+            
+            console.log('Products API response:', prodRes);
+            console.log('Orders API response:', orderRes);
+            console.log('Products data:', prodRes.data);
+            console.log('Orders data:', orderRes.data);
+            
+            // Try different possible response structures
+            const productsData = prodRes.data?.data || prodRes.data || [];
+            const ordersData = orderRes.data?.data || orderRes.data || [];
+            
+            console.log('Final products data:', productsData);
+            console.log('Final orders data:', ordersData);
+            
+            setProducts(productsData);
+            setOrders(ordersData);
         } catch (err) {
             console.error('Failed to fetch dashboard data:', err);
             toast.error('Failed to fetch dashboard data');
