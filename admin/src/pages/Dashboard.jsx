@@ -8,7 +8,6 @@ const api = axios.create({
     baseURL: 'https://karan-homeo-pharmacy.onrender.com/api' 
 });
 
-console.log('API Base URL:', api.defaults.baseURL);
 
 const Dashboard = () => {
     const [products, setProducts] = useState([]);
@@ -29,16 +28,10 @@ const Dashboard = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            console.log('Attempting to fetch data from:', api.defaults.baseURL);
             const [prodRes, orderRes] = await Promise.all([
                 api.get('/products'),
                 api.get('/orders/admin/all'),
             ]);
-            
-            console.log('Products API response:', prodRes);
-            console.log('Orders API response:', orderRes);
-            console.log('Products data:', prodRes.data);
-            console.log('Orders data:', orderRes.data);
             
             // Check if response is HTML (indicates wrong endpoint)
             if (typeof prodRes.data === 'string' && prodRes.data.includes('<!doctype html>')) {
@@ -51,9 +44,6 @@ const Dashboard = () => {
             // Try different possible response structures
             const productsData = prodRes.data?.data || prodRes.data || [];
             const ordersData = orderRes.data?.data || orderRes.data || [];
-            
-            console.log('Final products data:', productsData);
-            console.log('Final orders data:', ordersData);
             
             setProducts(productsData);
             setOrders(ordersData);
