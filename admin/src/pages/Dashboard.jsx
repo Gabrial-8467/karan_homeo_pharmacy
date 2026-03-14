@@ -42,10 +42,10 @@ const Dashboard = () => {
     };
 
     // Stats
-    const totalProducts = products.length;
-    const totalOrders = orders.length;
-    const totalRevenue = orders.reduce((sum, o) => sum + (o.orderStatus === 'Delivered' ? o.totalPrice : 0), 0);
-    const recentOrders = orders.slice(0, 10);
+    const totalProducts = products?.length || 0;
+    const totalOrders = orders?.length || 0;
+    const totalRevenue = orders?.reduce((sum, o) => sum + (o.orderStatus === 'Delivered' ? o.totalPrice : 0), 0) || 0;
+    const recentOrders = orders?.slice(0, 10) || [];
 
     return (
         <div className="p-2 sm:p-4">
