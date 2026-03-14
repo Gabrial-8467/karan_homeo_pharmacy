@@ -4,7 +4,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { io } from 'socket.io-client';
 
-const api = axios.create({ baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api` });
+const api = axios.create({ baseURL: `${import.meta.env.VITE_API_URL}/api` });
 
 const STATUS_OPTIONS = [
     'Processing',
@@ -26,7 +26,7 @@ const Orders = () => {
         fetchOrders();
         
         // Initialize Socket.io connection
-        const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
+        const socket = io(import.meta.env.VITE_API_URL, {
             transports: ['websocket', 'polling']
         });
 

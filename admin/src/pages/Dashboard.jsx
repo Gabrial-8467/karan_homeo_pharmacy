@@ -4,7 +4,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { io } from 'socket.io-client';
 
-const api = axios.create({ baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api` });
+const api = axios.create({ baseURL: `${import.meta.env.VITE_API_URL}/api` });
 
 const Dashboard = () => {
     const [products, setProducts] = useState([]);
@@ -15,48 +15,26 @@ const Dashboard = () => {
     useEffect(() => {
         fetchData();
 
-        // Initialize Socket.io connection
-        const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
-            transports: ['websocket', 'polling']
-        });
-
-        // Join admin room
-        socket.emit('join-admin');
-
-        // Listen for new orders
-        socket.on('new-order', (orderData) => {
-            toast.success(`New order received from ${orderData.customerName}! Order ID: ${orderData.orderId}`);
-            setNewOrdersNotification(true);
-            setTimeout(() => setNewOrdersNotification(false), 5000);
-
-            // Refresh dashboard data
-            fetchData();
-        });
-
-        // Handle connection events
-        socket.on('connect', () => {
-            //console.log('Connected to server');
-        });
-
-        socket.on('disconnect', () => {
-            //console.log('Disconnected from server');
-        });
+        // WebSocket disabled until backend is available
 
         return () => {
-            socket.disconnect();
+            // Cleanup if needed
         };
     }, []);
 
     const fetchData = async () => {
         setLoading(true);
         try {
+            console.log('Attempting to fetch data from:', `${import.meta.env.VITE_API_URL}/api`);
             const [prodRes, orderRes] = await Promise.all([
                 api.get('/products'),
                 api.get('/orders/admin/all'),
             ]);
+            console.log('Data fetched successfully:', { products: prodRes.data.data, orders: orderRes.data.data });
             setProducts(prodRes.data.data);
             setOrders(orderRes.data.data);
         } catch (err) {
+            console.error('Failed to fetch dashboard data:', err);
             toast.error('Failed to fetch dashboard data');
         } finally {
             setLoading(false);

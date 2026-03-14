@@ -4,7 +4,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const api = axios.create({ 
-    baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`,
+    baseURL: `${import.meta.env.VITE_API_URL}/api`,
     timeout: 10000 // 10 second timeout
 });
 
@@ -12,7 +12,7 @@ const api = axios.create({
 const getImageUrl = (imagePath) => {
     if (!imagePath) return '/placeholder-image.png';
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath;
-    return `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${imagePath}`;
+    return `${import.meta.env.VITE_API_URL}${imagePath}`;
 };
 
 // Skeleton loader component
