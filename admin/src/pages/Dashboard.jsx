@@ -4,7 +4,11 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { io } from 'socket.io-client';
 
-const api = axios.create({ baseURL: `${import.meta.env.VITE_API_URL}/api` });
+const api = axios.create({ 
+    baseURL: `${import.meta.env.VITE_API_URL}/api` 
+});
+
+console.log('API Base URL:', api.defaults.baseURL);
 
 const Dashboard = () => {
     const [products, setProducts] = useState([]);
@@ -25,7 +29,7 @@ const Dashboard = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            console.log('Attempting to fetch data from:', `${import.meta.env.VITE_API_URL}/api`);
+            console.log('Attempting to fetch data from:', api.defaults.baseURL);
             const [prodRes, orderRes] = await Promise.all([
                 api.get('/products'),
                 api.get('/orders/admin/all'),
@@ -35,6 +39,14 @@ const Dashboard = () => {
             console.log('Orders API response:', orderRes);
             console.log('Products data:', prodRes.data);
             console.log('Orders data:', orderRes.data);
+            
+            // Check if response is HTML (indicates wrong endpoint)
+            if (typeof prodRes.data === 'string' && prodRes.data.includes('<!doctype html>')) {
+                throw new Error('Products endpoint is returning HTML instead of JSON');
+            }
+            if (typeof orderRes.data === 'string' && orderRes.data.includes('<!doctype html>')) {
+                throw new Error('Orders endpoint is returning HTML instead of JSON');
+            }
             
             // Try different possible response structures
             const productsData = prodRes.data?.data || prodRes.data || [];
@@ -47,7 +59,7 @@ const Dashboard = () => {
             setOrders(ordersData);
         } catch (err) {
             console.error('Failed to fetch dashboard data:', err);
-            toast.error('Failed to fetch dashboard data');
+            toast.error('Failed to fetch dashboard data: ' + err.message);
         } finally {
             setLoading(false);
         }
