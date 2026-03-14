@@ -103,10 +103,6 @@ const orderSchema = new mongoose.Schema({
         required: true,
         enum: ['Processing', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled'],
         default: 'Processing'
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
     }
 });
 
@@ -128,4 +124,4 @@ orderSchema.pre('save', function(next) {
 });
 
 const Order = mongoose.model('Order', orderSchema);
-module.exports = Order; 
+module.exports = Order;

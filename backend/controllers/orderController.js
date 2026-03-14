@@ -88,6 +88,10 @@ exports.adminDeleteOrder = async (req, res) => {
 // Customer Controllers
 exports.createOrder = async (req, res) => {
     try {
+        console.log('Create order request received');
+        console.log('User:', req.user);
+        console.log('Body:', req.body);
+
         if (!req.user) {
             return res.status(401).json({ 
                 success: false, 
@@ -97,29 +101,78 @@ exports.createOrder = async (req, res) => {
 
         const { orderItems, shippingAddress, paymentMethod } = req.body;
 
-        // ✅ Use logged in user from req.user (set by auth middleware)
+        // Validate required fields
+        if (!orderItems || orderItems.length === 0) {
+            return res.status(400).json({ success: false, message: 'Order items are required' });
+        }
+        if (!shippingAddress) {
+            return res.status(400).json({ success: false, message: 'Shipping address is required' });
+        }
+        if (!paymentMethod) {
+            return res.status(400).json({ success: false, message: 'Payment method is required' });
+        }
+
+        // Validate shipping address fields
+        const requiredFields = ['fullName', 'address', 'city', 'state', 'postalCode', 'phone'];
+        const missingFields = requiredFields.filter(field => !shippingAddress[field]);
+        if (missingFields.length > 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: `Missing required shipping address fields: ${missingFields.join(', ')}` 
+            });
+        }
+
+        // Validate order items
+        for (const item of orderItems) {
+            if (!item.product || !item.name || !item.image || !item.price || !item.quantity) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Each order item must have product, name, image, price, and quantity' 
+                });
+            }
+        }
+
+        console.log('Validation passed, creating order...');
+
+        // Calculate prices manually since pre-save hook has issues
+        const itemsPrice = orderItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        const shippingPrice = 50;
+        const totalPrice = itemsPrice + shippingPrice;
+
+        // Create order with calculated prices
         const order = new Order({
             user: req.user._id,
             orderItems,
             shippingAddress,
             paymentMethod,
-            totalPrice: orderItems.reduce((acc, item) => acc + item.quantity * item.price, 0)
+            itemsPrice,
+            shippingPrice,
+            totalPrice,
+            createdAt: new Date()
         });
 
-        const createdOrder = await order.save();
+        // Use insertOne to bypass pre-save hooks
+        const orderData = order.toObject();
+        delete orderData._id;
+        
+        const createdOrder = await Order.insertMany([orderData]);
+        const savedOrder = createdOrder[0];
+
+        console.log('Order created successfully:', savedOrder._id);
 
         if (req.io) {
             req.io.to('admin').emit('new-order', {
-                orderId: createdOrder._id,
+                orderId: savedOrder._id,
                 customerName: req.user.name,
-                totalPrice: createdOrder.totalPrice,
-                orderStatus: createdOrder.orderStatus,
-                createdAt: createdOrder.createdAt
+                totalPrice: savedOrder.totalPrice,
+                orderStatus: savedOrder.orderStatus,
+                createdAt: savedOrder.createdAt
             });
         }
 
-        res.status(201).json({ success: true, data: createdOrder });
+        res.status(201).json({ success: true, data: savedOrder });
     } catch (error) {
+        console.error('Error creating order:', error);
         res.status(400).json({ success: false, message: error.message });
     }
 };

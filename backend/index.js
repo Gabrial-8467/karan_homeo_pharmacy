@@ -44,6 +44,23 @@ app.use(cors({
 
 app.use(express.json());
 
+// Request logging middleware
+app.use((req, res, next) => {
+    const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
+    console.log(`[${timestamp}] ${req.method} ${req.originalUrl}`);
+    
+    // Log response when it's sent
+    const originalSend = res.send;
+    res.send = function(data) {
+        const responseTime = new Date().toISOString().split('T')[1].split('.')[0];
+        const statusEmoji = res.statusCode < 400 ? '✅' : res.statusCode < 500 ? '⚠️' : '❌';
+        console.log(`[${responseTime}] ${statusEmoji} ${res.statusCode} ${req.method} ${req.originalUrl}`);
+        return originalSend.call(this, data);
+    };
+    
+    next();
+});
+
 // Make io available to routes (must come BEFORE routes)
 app.use((req, res, next) => {
     req.io = io;
@@ -85,6 +102,6 @@ app.use(errorHandler);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, "0.0.0.0",() => {
+server.listen(PORT,() => {
     console.log(`Server is running on port ${PORT}`);
 });

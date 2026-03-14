@@ -24,4 +24,4 @@ router.get('/myorders', protect, getMyOrders);
 router.get('/:id', protect, getOrderById);
 router.put('/:id/pay', protect, updatePaymentStatus);
 
-module.exports = router; 
+module.exports = router;
