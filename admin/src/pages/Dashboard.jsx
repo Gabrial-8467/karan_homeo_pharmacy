@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { io } from 'socket.io-client';
 
 const api = axios.create({ 
-    baseURL: `${import.meta.env.VITE_API_URL}/api` 
+    baseURL: 'https://karan-homeo-pharmacy.onrender.com/api' 
 });
 
 console.log('API Base URL:', api.defaults.baseURL);
