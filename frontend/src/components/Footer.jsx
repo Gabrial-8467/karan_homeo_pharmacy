@@ -10,11 +10,11 @@ const Footer = () => (
       <div className="flex-1 mb-8 md:mb-0 flex flex-col gap-2 items-center md:items-start">
         <div className="flex items-center gap-2 mb-2">
           <span className="bg-white rounded-full p-2"><FiHeart className="text-blue-700" size={24} /></span>
-          <span className="text-xl sm:text-2xl font-bold tracking-wide">Karan Homeo Pharmacy</span>
+          <span className="text-xl sm:text-2xl font-bold tracking-wide">NovaCart</span>
         </div>
-        <span className="text-xs sm:text-sm opacity-80 text-center md:text-left">Your trusted online homeopathic pharmacy for genuine medicines and fast delivery.</span>
+        <span className="text-xs sm:text-sm opacity-80 text-center md:text-left">Your trusted e-commerce platform for quality products and excellent service.</span>
         <div className="flex items-center gap-2 mt-2 text-xs sm:text-sm opacity-80">
-          <FiMapPin size={50}/> Sua Road, near, new railway phatak, Bhai Himmat Singh Nagar, Lapar Market, Baba Deep Singh Nagar, Ludhiana, Punjab 141013
+          <FiMapPin size={50} /> Global Shipping - Online Store
         </div>
       </div>
       {/* Divider for desktop */}
@@ -50,7 +50,7 @@ const Footer = () => (
       </div>
     </div>
     <div className="max-w-6xl mx-auto flex flex-col justify-center items-center mt-8 pt-6 border-t border-blue-800 text-xs sm:text-sm opacity-80 gap-4 relative z-10">
-      <span>&copy; {new Date().getFullYear()} Karan Homeo Pharmacy. All rights reserved.</span>
+      <span>&copy; {new Date().getFullYear()} NovaCart. All rights reserved.</span>
     </div>
   </footer>
 );

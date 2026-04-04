@@ -1,109 +1,127 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="google-site-verification" content="X5SEe0HERlRvtjywqALiVYhbDjaGDxPxSsArycJNU0s" />
-    <meta name="msvalidate.01" content="0709708AE5A381BD7DFE25B25062164D" />
-    <!-- Performance Optimizations -->
-    <link rel="preconnect" href="https://karan-homeo-pharmacy.onrender.com" />
-    <link rel="dns-prefetch" href="https://karan-homeo-pharmacy.onrender.com" />
-    <link rel="preload" href="/src/main.jsx" as="script" />
-    
-    <!-- Critical CSS for above-the-fold content -->
-    <style>
-      /* Critical CSS for immediate visual feedback */
-      body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
-      #root { min-height: 100vh; }
-      .loading-skeleton { 
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: loading 1.5s infinite;
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google-site-verification" content="X5SEe0HERlRvtjywqALiVYhbDjaGDxPxSsArycJNU0s" />
+  <meta name="msvalidate.01" content="0709708AE5A381BD7DFE25B25062164D" />
+  <!-- Performance Optimizations -->
+  <link rel="preconnect" href="https://novacart.onrender.com" />
+  <link rel="dns-prefetch" href="https://novacart.onrender.com" />
+  <link rel="preload" href="/src/main.jsx" as="script" />
+
+  <!-- Critical CSS for above-the-fold content -->
+  <style>
+    /* Critical CSS for immediate visual feedback */
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    }
+
+    #root {
+      min-height: 100vh;
+    }
+
+    .loading-skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+    }
+
+    @keyframes loading {
+      0% {
+        background-position: 200% 0;
       }
-      @keyframes loading {
-        0% { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
+
+      100% {
+        background-position: -200% 0;
       }
-      .hero-skeleton {
-        height: 400px;
-        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #1e40af;
-        font-size: 2rem;
-        font-weight: bold;
-      }
-    </style>
+    }
 
-    <!-- Primary Meta Tags - Optimized for Homeopathy Clinic Searches -->
-    <title>Best Pharmacy & Homeo Clinic Ludhiana | Karan Homeo Pharmacy</title>
-    <meta name="title" content="Best Pharmacy & Homeo Clinic Ludhiana | Karan Homeo Pharmacy">
-    <meta name="description" content="Best pharmacy and homeo clinic in Ludhiana. Expert homeopathic doctor consultation, genuine medicines, and natural treatment. Leading medical store for homeopathic remedies in Ludhiana." />
-    <meta name="theme-color" content="#1e40af" />
-    <meta name="keywords" content="best pharmacy and homeo clinic in ludhiana, best pharmacy in ludhiana, homeopathy clinic, best homeo doctor, homeopathy clinic near me, homeopathic treatment, homeo clinic ludhiana, best homeopathy doctor, homeopathic medicine, natural treatment, holistic healing, homeopathy consultation, homeopathic remedies, alternative medicine, homeo treatment, homeopathy specialist, homeopathic clinic, best homeo clinic, homeopathy doctor near me, homeopathic consultation, natural healing, homeopathy medicine, pharmacy near me, medical store ludhiana, medicine shop ludhiana, ayurvedic pharmacy, herbal medicine shop">
-    <meta name="author" content="Dr. Karan - Karan Homeo Pharmacy">
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <meta name="googlebot" content="index, follow">
-    <meta name="bingbot" content="index, follow">
+    .hero-skeleton {
+      height: 400px;
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1e40af;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+  </style>
 
-    <!-- Open Graph / Facebook - Enhanced for Clinic Searches -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://karan-homeo-pharmacy.vercel.app/">
-    <meta property="og:title" content="Best Pharmacy & Homeo Clinic Ludhiana | Karan Homeo Pharmacy">
-    <meta property="og:description" content="Best pharmacy and homeo clinic in Ludhiana. Expert homeopathic doctor consultation, genuine medicines, and natural treatment. Leading medical store for homeopathic remedies in Ludhiana.">
-    <meta property="og:image" content="https://karan-homeo-pharmacy.vercel.app/og-image.jpg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:site_name" content="Karan Homeo Pharmacy">
-    <meta property="og:locale" content="en_US">
+  <!-- Primary Meta Tags - Optimized for E-Commerce -->
+  <title>Best E-Commerce Platform | NovaCart</title>
+  <meta name="title" content="Best E-Commerce Platform | NovaCart">
+  <meta name="description"
+    content="NovaCart - Best e-commerce platform for online shopping. Quality products, secure payments, fast delivery, and excellent customer service. Your trusted online shopping destination." />
+  <meta name="theme-color" content="#1e40af" />
+  <meta name="keywords"
+    content="best e-commerce platform, online shopping, NovaCart, secure payments, fast delivery, quality products, online store, shopping cart, buy online, best shopping website, e-commerce solutions, online marketplace, digital shopping, retail therapy, shop online, best prices">
+  <meta name="author" content="NovaCart Team">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow">
+  <meta name="bingbot" content="index, follow">
 
-    <!-- Twitter - Enhanced for Clinic Searches -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://karan-homeo-pharmacy.vercel.app/">
-    <meta name="twitter:title" content="Best Pharmacy & Homeo Clinic Ludhiana | Karan Homeo Pharmacy">
-    <meta name="twitter:description" content="Best pharmacy and homeo clinic in Ludhiana. Expert homeopathic doctor consultation, genuine medicines, and natural treatment. Leading medical store for homeopathic remedies in Ludhiana.">
-    <meta name="twitter:image" content="https://karan-homeo-pharmacy.vercel.app/twitter-image.jpg">
+  <!-- Open Graph / Facebook - Enhanced for E-Commerce -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://novacart.vercel.app/">
+  <meta property="og:title" content="Best E-Commerce Platform | NovaCart">
+  <meta property="og:description"
+    content="NovaCart - Best e-commerce platform for online shopping. Quality products, secure payments, fast delivery, and excellent customer service.">
+  <meta property="og:image" content="https://novacart.vercel.app/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="NovaCart">
+  <meta property="og:locale" content="en_US">
 
-    <!-- Additional SEO Meta Tags -->
-    <meta name="geo.region" content="IN-PB">
-    <meta name="geo.placename" content="Ludhiana">
-    <meta name="geo.position" content="30°51'47.5,75°51'09.7">
-    <meta name="ICBM" content="30°51'47.5,75°51'09.7">
-    <meta name="DC.title" content="Best Homeopathy Clinic in Ludhiana">
-    <meta name="DC.description" content="Leading homeopathy clinic in Ludhiana. Expert consultation, genuine medicines, natural treatment.">
-    <meta name="DC.subject" content="Homeopathy, Homeopathic Clinic, Natural Treatment">
-    <meta name="DC.creator" content="Dr. Karan - Karan Homeo Pharmacy">
-    <meta name="DC.publisher" content="Karan Homeo Pharmacy">
-    <meta name="DC.coverage" content="Ludhiana, Punjab, India">
-    <meta name="DC.language" content="en">
+  <!-- Twitter - Enhanced for E-Commerce -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://novacart.vercel.app/">
+  <meta name="twitter:title" content="Best E-Commerce Platform | NovaCart">
+  <meta name="twitter:description"
+    content="NovaCart - Best e-commerce platform for online shopping. Quality products, secure payments, fast delivery, and excellent customer service.">
+  <meta name="twitter:image" content="https://novacart.vercel.app/twitter-image.jpg">
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
+  <!-- Additional SEO Meta Tags -->
+  <meta name="geo.region" content="IN-PB">
+  <meta name="geo.placename" content="Ludhiana">
+  <meta name="geo.position" content="30°51'47.5,75°51'09.7">
+  <meta name="ICBM" content="30°51'47.5,75°51'09.7">
+  <meta name="DC.title" content="Best E-Commerce Platform - NovaCart">
+  <meta name="DC.description"
+    content="Leading e-commerce platform for online shopping. Quality products, secure payments, fast delivery, and excellent customer service.">
+  <meta name="DC.subject" content="E-Commerce, Online Shopping, NovaCart, Digital Marketplace">
+  <meta name="DC.creator" content="NovaCart Team">
+  <meta name="DC.publisher" content="NovaCart">
+  <meta name="DC.coverage" content="Global">
+  <meta name="DC.language" content="en">
 
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://karan-homeo-pharmacy.vercel.app/" />
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
 
-    <!-- Enhanced Local Business Schema Markup for Clinic Searches -->
-    <script type="application/ld+json">
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://novacart.vercel.app/" />
+
+  <!-- Enhanced E-Commerce Schema Markup -->
+  <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "MedicalClinic",
-      "name": "Karan Homeo Pharmacy - Best Pharmacy and Homeo Clinic in Ludhiana",
-      "alternateName": "Karan Homeo Clinic & Medical Store",
-      "description": "Best pharmacy and homeo clinic in Ludhiana. Leading medical store offering expert consultation, genuine homeopathic medicines, and natural treatment. Top pharmacy and homeopathic clinic in Ludhiana.",
-      "image": "https://karan-homeo-pharmacy.vercel.app/clinic-image.jpg",
-      "url": "https://karan-homeo-pharmacy.vercel.app/",
+      "@type": "OnlineStore",
+      "name": "NovaCart - Best E-Commerce Platform",
+      "description": "NovaCart - Best e-commerce platform for online shopping. Quality products, secure payments, fast delivery, and excellent customer service. Your trusted online shopping destination.",
+      "image": "https://novacart.vercel.app/store-image.jpg",
+      "url": "https://novacart.vercel.app/",
       "telephone": "+91 7986834022",
-      "email": "info@karanhomeopharmacy.com",
-      "priceRange": "₹₹",
+      "priceRange": "$$",
       "paymentAccepted": "Cash, Credit Card, Debit Card, UPI",
-      "currenciesAccepted": "INR",
-      "openingHours": "Mo-Sa 09:00-19:00",
+      "currenciesAccepted": "USD, EUR, GBP",
+      "openingHours": "24/7",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "Sua Road, near new railway phatak, Bhai Himmat Singh Nagar, Lapar Market, Baba Deep Singh Nagar",
@@ -118,17 +136,16 @@
         "longitude":75°51'09.7"E
       },
       "hasMap": "https://maps.google.com/?q=30°51'47.5,75°51'09.7",
-      "medicalSpecialty": "Homeopathy",
       "availableService": [
         {
-          "@type": "MedicalProcedure",
-          "name": "Homeopathic Consultation",
-          "description": "Expert homeopathic consultation and treatment"
+          "@type": "Service",
+          "name": "Online Shopping",
+          "description": "Quality products with secure payments and fast delivery"
         },
         {
-          "@type": "MedicalProcedure", 
-          "name": "Homeopathic Medicine Dispensing",
-          "description": "Genuine homeopathic medicines and remedies"
+          "@type": "Service", 
+          "name": "Customer Support",
+          "description": "24/7 customer service and order tracking"
         }
       ],
       "review": {
@@ -142,7 +159,7 @@
           "@type": "Person",
           "name": "Patient"
         },
-        "reviewBody": "Excellent homeopathic treatment and consultation. Highly recommended for natural healing."
+        "reviewBody": "Excellent e-commerce platform with great products and fast delivery. Highly recommended for online shopping."
       },
       "aggregateRating": {
         "@type": "AggregateRating",
@@ -154,17 +171,16 @@
     }
     </script>
 
-    <!-- Additional Schema for Doctor -->
-    <script type="application/ld+json">
+  <!-- Company Schema -->
+  <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "name": "Dr. Renu Bala",
-      "jobTitle": "Homeopathic Doctor",
-      "description": "Expert homeopathic doctor in Ludhiana with years of experience in natural treatment and holistic healing.",
-      "medicalSpecialty": "Homeopathy",
+      "name": "NovaCart Team",
+      "jobTitle": "E-Commerce Platform",
+      "description": "Leading e-commerce platform providing quality products and excellent customer service.",
       "worksFor": {
-        "@type": "MedicalClinic",
-        "name": "Karan Homeo Pharmacy"
+        "@type": "OnlineStore",
+        "name": "NovaCart"
       },
       "address": {
         "@type": "PostalAddress",
@@ -175,73 +191,76 @@
         "addressCountry": "IN"
       },
       "telephone": "+91 7986834022",
-      "url": "https://karan-homeo-pharmacy-18po.vercel.app/"
+      "url": "https://novacart.vercel.app/"
     }
     </script>
 
-    <!-- FAQ Schema for Better Search Rankings -->
-    <script type="application/ld+json">
+  <!-- FAQ Schema for Better Search Rankings -->
+  <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "What is the best pharmacy and homeo clinic in Ludhiana?",
+          "name": "What is the best e-commerce platform for online shopping?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Karan Homeo Pharmacy is the best pharmacy and homeo clinic in Ludhiana, offering homeopathic medicines, expert consultation, and natural treatment. Leading medical store for homeopathic remedies."
+            "text": "NovaCart is the best e-commerce platform for online shopping, offering quality products, secure payments, fast delivery, and excellent customer service. Your trusted online shopping destination."
           }
         },
         {
           "@type": "Question",
-          "name": "Which is the top medical store and homeopathy clinic in Ludhiana?",
+          "name": "Which is the top online shopping platform?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Karan Homeo Pharmacy is the top medical store and homeopathy clinic in Ludhiana, specializing in homeopathic medicines and offering expert doctor consultation for natural treatment."
+            "text": "NovaCart is the top online shopping platform, specializing in quality products and offering excellent customer service with secure payment options and fast delivery."
           }
         },
         {
           "@type": "Question",
-          "name": "Where can I find the best pharmacy and homeo clinic near me in Ludhiana?",
+          "name": "Where can I find the best online shopping deals?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Karan Homeo Pharmacy is the leading pharmacy and homeo clinic in Ludhiana with genuine medicines, expert consultation, and natural treatment options."
+            "text": "NovaCart is the leading online shopping platform with quality products, competitive prices, secure payments, and excellent customer service."
           }
         },
         {
           "@type": "Question",
-          "name": "What are the benefits of homeopathic treatment?",
+          "name": "What are the benefits of online shopping with NovaCart?",
           "acceptedAnswer": {
             "@type": "Answer", 
-            "text": "Homeopathic treatment offers natural healing, minimal side effects, holistic approach, and treats the root cause of diseases rather than just symptoms."
+            "text": "Online shopping with NovaCart offers convenience, secure payments, fast delivery, quality products, excellent customer service, and competitive prices."
           }
         }
       ]
     }
     </script>
 
-    <!-- Preload critical resources -->
-    <link rel="preload" href="/src/index.css" as="style" />
-    <link rel="preload" href="/src/main.jsx" as="script" />
-    
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <!-- DNS prefetch for API calls -->
-    <link rel="dns-prefetch" href="//localhost:5000" />
-  </head>
-  <body>
-    <div id="root">
-      <!-- SEO H1 Tag - Hidden from users, visible to search engines -->
-      <h1 style="position: absolute; left: -9999px; top: -9999px;">Best Pharmacy & Homeo Clinic Ludhiana | Karan Homeo Pharmacy - Medical Store</h1>
-      <!-- Loading skeleton for immediate visual feedback -->
-      <div class="hero-skeleton">
-        <div>Karan Homeo Pharmacy</div>
-      </div>
+  <!-- Preload critical resources -->
+  <link rel="preload" href="/src/index.css" as="style" />
+  <link rel="preload" href="/src/main.jsx" as="script" />
+
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- DNS prefetch for API calls -->
+  <link rel="dns-prefetch" href="//localhost:5000" />
+</head>
+
+<body>
+  <div id="root">
+    <!-- SEO H1 Tag - Hidden from users, visible to search engines -->
+    <h1 style="position: absolute; left: -9999px; top: -9999px;">Best E-Commerce Platform | NovaCart - Online Shopping
+    </h1>
+    <!-- Loading skeleton for immediate visual feedback -->
+    <div class="hero-skeleton">
+      <div>NovaCart</div>
     </div>
-    <script type="module" src="/src/main.jsx"></script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
-  </body>
+  </div>
+  <script type="module" src="/src/main.jsx"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+</body>
+
 </html>

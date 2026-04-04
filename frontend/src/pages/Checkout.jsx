@@ -114,7 +114,7 @@ const Checkout = () => {
                 key: RAZORPAY_KEY_ID,
                 amount: order.amount,
                 currency: order.currency,
-                name: "Karan Homeo Pharmacy",
+                name: "NovaCart",
                 description: "Order Payment",
                 order_id: order.id,
                 handler: async function (response) {
@@ -181,7 +181,7 @@ const Checkout = () => {
                         <div className="grid grid-cols-1 gap-4 sm:gap-6">
                             <input type="text" name="fullName" placeholder="Full Name" onChange={handleChange} className={`w-full p-2 sm:p-3 border ${errors.fullName ? 'border-red-500' : 'border-gray-300'} rounded-md text-sm sm:text-base`} />
                             {errors.fullName && <p className="text-red-500 text-xs">{errors.fullName}</p>}
-                            
+
                             <input type="text" name="address" placeholder="Address" onChange={handleChange} className={`w-full p-2 sm:p-3 border ${errors.address ? 'border-red-500' : 'border-gray-300'} rounded-md text-sm sm:text-base`} />
                             {errors.address && <p className="text-red-500 text-xs">{errors.address}</p>}
 
@@ -189,17 +189,17 @@ const Checkout = () => {
                                 <input type="text" name="city" placeholder="City" onChange={handleChange} className={`w-full p-2 sm:p-3 border ${errors.city ? 'border-red-500' : 'border-gray-300'} rounded-md text-sm sm:text-base`} />
                                 <input type="text" name="state" placeholder="State" onChange={handleChange} className={`w-full p-2 sm:p-3 border ${errors.state ? 'border-red-500' : 'border-gray-300'} rounded-md text-sm sm:text-base`} />
                             </div>
-                             {errors.city && <p className="text-red-500 text-xs">{errors.city}</p>}
-                             {errors.state && <p className="text-red-500 text-xs">{errors.state}</p>}
+                            {errors.city && <p className="text-red-500 text-xs">{errors.city}</p>}
+                            {errors.state && <p className="text-red-500 text-xs">{errors.state}</p>}
 
                             <div className="grid grid-cols-2 gap-2 sm:gap-4">
                                 <input type="text" name="postalCode" placeholder="Postal Code" onChange={handleChange} className={`w-full p-2 sm:p-3 border ${errors.postalCode ? 'border-red-500' : 'border-gray-300'} rounded-md text-sm sm:text-base`} />
                                 <input type="text" name="phone" placeholder="Phone" onChange={handleChange} className={`w-full p-2 sm:p-3 border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-md text-sm sm:text-base`} />
                             </div>
                             {errors.postalCode && <p className="text-red-500 text-xs">{errors.postalCode}</p>}
-                             {errors.phone && <p className="text-red-500 text-xs">{errors.phone}</p>}
+                            {errors.phone && <p className="text-red-500 text-xs">{errors.phone}</p>}
                         </div>
-                        
+
                         <h3 className="text-lg sm:text-xl font-semibold mt-6 sm:mt-8 mb-2 sm:mb-4">Payment Method</h3>
                         <div className="space-y-2 sm:space-y-4">
                             <label className="flex items-center p-3 sm:p-4 border border-gray-300 rounded-md cursor-pointer">
@@ -216,7 +216,7 @@ const Checkout = () => {
                             <button type="button" disabled={isLoading || cart.length === 0} onClick={handleRazorpayPayment} className="w-full mt-6 sm:mt-8 bg-green-600 text-white py-2.5 sm:py-3 rounded-md font-semibold text-base sm:text-lg hover:bg-green-700 disabled:bg-green-300">
                                 {isLoading ? 'Processing Payment...' : 'Pay with Razorpay'}
                             </button>
-                        ) : ( 
+                        ) : (
                             <button type="submit" disabled={isLoading || cart.length === 0} className="w-full mt-6 sm:mt-8 bg-blue-600 text-white py-2.5 sm:py-3 rounded-md font-semibold text-base sm:text-lg hover:bg-blue-700 disabled:bg-blue-300">
                                 {isLoading ? 'Placing Order...' : 'Place Order'}
                             </button>

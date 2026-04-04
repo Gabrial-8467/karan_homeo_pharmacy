@@ -4,8 +4,8 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { io } from 'socket.io-client';
 
-const api = axios.create({ 
-    baseURL: 'https://karan-homeo-pharmacy.onrender.com/api' 
+const api = axios.create({
+    baseURL: 'https://novacart.onrender.com/api'
 });
 
 
@@ -32,7 +32,7 @@ const Dashboard = () => {
                 api.get('/products'),
                 api.get('/orders/admin/all'),
             ]);
-            
+
             // Check if response is HTML (indicates wrong endpoint)
             if (typeof prodRes.data === 'string' && prodRes.data.includes('<!doctype html>')) {
                 throw new Error('Products endpoint is returning HTML instead of JSON');
@@ -40,11 +40,11 @@ const Dashboard = () => {
             if (typeof orderRes.data === 'string' && orderRes.data.includes('<!doctype html>')) {
                 throw new Error('Orders endpoint is returning HTML instead of JSON');
             }
-            
+
             // Try different possible response structures
             const productsData = prodRes.data?.data || prodRes.data || [];
             const ordersData = orderRes.data?.data || orderRes.data || [];
-            
+
             setProducts(productsData);
             setOrders(ordersData);
         } catch (err) {
@@ -58,8 +58,8 @@ const Dashboard = () => {
     // Stats
     const totalProducts = products?.length || 0;
     const totalOrders = orders?.length || 0;
-    const totalRevenue = Array.isArray(orders) 
-        ? orders.reduce((sum, o) => sum + (o.orderStatus === 'Delivered' ? o.totalPrice : 0), 0) 
+    const totalRevenue = Array.isArray(orders)
+        ? orders.reduce((sum, o) => sum + (o.orderStatus === 'Delivered' ? o.totalPrice : 0), 0)
         : 0;
     const recentOrders = Array.isArray(orders) ? orders.slice(0, 10) : [];
 

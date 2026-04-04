@@ -4,7 +4,7 @@ const cloudinary = require('./cloudinary');
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  folder: 'karan-homeo-pharmacy',
+  folder: 'novacart',
   allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'bmp', 'avif'],
 });
 

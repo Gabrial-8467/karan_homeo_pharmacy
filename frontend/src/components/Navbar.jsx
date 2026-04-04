@@ -47,7 +47,7 @@ const Navbar = () => {
         <nav className="bg-white shadow-md py-4 px-4 sm:px-8 flex justify-between items-center sticky top-0 z-50">
             <div className="text-2xl font-bold text-blue-700 flex items-center gap-2">
                 <GiMedicines className="text-blue-700" size={28} />
-                <Link to="/">Karan Homeo Pharmacy</Link>
+                <Link to="/">NovaCart</Link>
             </div>
             {/* Desktop Links */}
             <div className="hidden md:flex gap-6 items-center text-lg">
@@ -124,7 +124,7 @@ const Navbar = () => {
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-xl font-bold text-blue-700 flex items-center gap-2">
                                 <GiMedicines className="text-blue-700" size={24} />
-                                Karan Homeo Pharmacy
+                                NovaCart
                             </span>
                             <button
                                 className="text-2xl text-blue-700 focus:outline-none"

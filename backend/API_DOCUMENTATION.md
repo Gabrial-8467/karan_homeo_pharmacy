@@ -1,4 +1,4 @@
-# Karan Homeo Pharmacy API Documentation
+# NovaCart API Documentation
 
 ## Base URL
 ```

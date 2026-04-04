@@ -1,11 +1,11 @@
-# robots.txt for Karan Homeo Pharmacy
-# Website: Karan Homeo Pharmacy
+# robots.txt for NovaCart
+# Website: NovaCart
 
 User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://karan-homeo-pharmacy.vercel.app/sitemap.xml
+Sitemap: https://novacart.vercel.app/sitemap.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1

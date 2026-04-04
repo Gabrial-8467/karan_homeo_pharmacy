@@ -36,10 +36,10 @@ connectDB();
 
 // Basic middleware
 app.use(cors({
-  origin: true,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+    origin: true,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
@@ -48,16 +48,16 @@ app.use(express.json());
 app.use((req, res, next) => {
     const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
     console.log(`[${timestamp}] ${req.method} ${req.originalUrl}`);
-    
+
     // Log response when it's sent
     const originalSend = res.send;
-    res.send = function(data) {
+    res.send = function (data) {
         const responseTime = new Date().toISOString().split('T')[1].split('.')[0];
         const statusEmoji = res.statusCode < 400 ? '✅' : res.statusCode < 500 ? '⚠️' : '❌';
         console.log(`[${responseTime}] ${statusEmoji} ${res.statusCode} ${req.method} ${req.originalUrl}`);
         return originalSend.call(this, data);
     };
-    
+
     next();
 });
 
@@ -69,7 +69,7 @@ app.use((req, res, next) => {
 
 // Test routes
 app.get('/', (req, res) => {
-    res.send('<h1>Karan Homeo Pharmacy API</h1><p>Server is up and running!</p>');
+    res.send('<h1>NovaCart API</h1><p>Server is up and running!</p>');
 });
 
 app.get('/test', (req, res) => {
@@ -86,12 +86,12 @@ app.use('/api/products', productRoutes);
 // Socket.io connection handling
 io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);
-    
+
     socket.on('join-admin', () => {
         socket.join('admin');
         console.log('Admin joined room');
     });
-    
+
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
     });
@@ -102,6 +102,6 @@ app.use(errorHandler);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
-server.listen(PORT,() => {
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

@@ -5,9 +5,9 @@ const cloudinary = require('../config/cloudinary');
 
 // Update all products missing manufacturer on server start
 Product.updateMany({ manufacturer: { $exists: false } }, { $set: { manufacturer: 'Unknown Manufacturer' } }).then(res => {
-  if (res.modifiedCount > 0) {
-    //console.log(`Updated ${res.modifiedCount} products with default manufacturer.`);
-  }
+    if (res.modifiedCount > 0) {
+        //console.log(`Updated ${res.modifiedCount} products with default manufacturer.`);
+    }
 });
 
 // Admin Controllers
@@ -84,7 +84,7 @@ exports.adminDeleteProduct = async (req, res) => {
             // Extract public_id from the Cloudinary URL
             const matches = product.image.match(/\/([^\/]+)\.[a-zA-Z]+$/);
             if (matches && matches[1]) {
-                const publicId = `karan-homeo-pharmacy/${matches[1]}`;
+                const publicId = `novacart/${matches[1]}`;
                 try {
                     await cloudinary.uploader.destroy(publicId);
                 } catch (err) {
@@ -109,7 +109,7 @@ exports.adminDeleteProduct = async (req, res) => {
 exports.adminGetAllProducts = async (req, res) => {
     try {
         const { page = 1, limit = 50, search, sort } = req.query;
-        
+
         // Build query
         const query = {};
         if (search) {
@@ -122,14 +122,14 @@ exports.adminGetAllProducts = async (req, res) => {
 
         // Calculate pagination
         const skip = (page - 1) * limit;
-        
+
         // Build sort object
         let sortObj = { createdAt: -1 }; // default sort
         if (sort) {
             const [field, order] = sort.split('-');
             sortObj = { [field]: order === 'asc' ? 1 : -1 };
         }
-        
+
         // Execute query with pagination and lean() for better performance
         const products = await Product.find(query)
             .select('name price image manufacturer categories usage createdAt')
@@ -161,10 +161,10 @@ exports.adminGetAllProducts = async (req, res) => {
 exports.getProducts = async (req, res) => {
     try {
         const { search, minPrice, maxPrice, minRating, sort, page = 1, limit = 20 } = req.query;
-        
+
         // Build query
         const query = {};
-        
+
         if (search) {
             query.$or = [
                 { name: { $regex: search, $options: 'i' } },
@@ -185,7 +185,7 @@ exports.getProducts = async (req, res) => {
 
         // Calculate pagination
         const skip = (page - 1) * limit;
-        
+
         let products = Product.find(query)
             .select('name price image manufacturer categories usage description')
             .skip(skip)
