@@ -5,9 +5,8 @@ import toast from 'react-hot-toast';
 import { io } from 'socket.io-client';
 
 const api = axios.create({
-    baseURL: 'https://novacart.onrender.com/api'
+    baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`
 });
-
 
 const Dashboard = () => {
     const [products, setProducts] = useState([]);
