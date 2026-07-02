@@ -1,7 +1,5 @@
-# Karan Homeo Pharmacy
-
 ## Overview
-`Karan Homeo Pharmacy` is a **full‑stack e‑commerce platform** for a homeopathic pharmacy. The repository is split into three independent Vite/React front‑ends (admin, frontend) and a **Node.js/Express** API that powers both UIs.
+`NOVAKART` is a **full‑stack e‑commerce platform** for a buy things online like amazon. The repository is split into three independent Vite/React front‑ends (admin, frontend) and a **Node.js/Express** API that powers both UIs.
 
 The project follows a **micro‑frontend** architecture: each UI has its own build pipeline, `package.json`, and deployment configuration, while sharing a common backend API.
 
@@ -29,7 +27,7 @@ The project follows a **micro‑frontend** architecture: each UI has its own bui
 
 ## Project Structure
 ```
-karan_homeo_pharmacy/
+NOVAKART/
 ├─ admin/          # Admin UI – manage inventory, orders, users
 ├─ backend/        # Express API – authentication, CRUD, uploads
 ├─ frontend/       # Customer UI – product catalog, cart, checkout
@@ -187,23 +185,7 @@ npm run dev
 
 Each sub‑project runs on its own port (default Vite dev server ports: 5173 for admin, 5174 for frontend, 3000 for backend). Adjust `vercel.json` or `vite.config.js` if you need custom ports.
 
-## Deployment
-* **Vercel** – Each folder has a `vercel.json`. Deploy by linking the folder to a Vercel project.
-* **Docker** – Build images for backend and each UI; run with Docker Compose.
-* **Heroku / Render** – Use the `Procfile` or `start` scripts in `package.json`.
 
-## Testing
-* **Backend** – Jest + Supertest (look in `backend/tests/`).
-* **Frontend** – React Testing Library + Jest (look in `frontend/src/__tests__/`).
-```bash
-# Backend tests
-cd backend
-npm test
-
-# Frontend tests
-cd ../frontend
-npm test
-```
 
 ## Contributing
 1. Fork the repo.
